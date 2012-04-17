@@ -1,3 +1,5 @@
 Shiry & Valkyrie's Scene Recognition extravaganza
 
 Matlab tools for scene identification
+
+We are using LibSVM as our SVM thinger.
