@@ -1,3 +1,5 @@
+NUM_TRAINING_EXAMPLES_PER_CLASS = 100;
+
 % set image_dir and data_dir to your actual directories
 train_image_dir = 'data/train'; 
 test_image_dir = 'data/test'; 
@@ -46,7 +48,7 @@ for i=1:15
     % for this class
     train_class = zeros(num_train_files);
     train_class = train_class(:,1);
-    train_class((i-1)*100+1:(i-1)*100+100) = 1;
+    train_class((i-1)*NUM_TRAINING_EXAMPLES_PER_CLASS+1:i*NUM_TRAINING_EXAMPLES_PER_CLASS) = 1;
     
     % build the vector describing test labels; 0 for not this class, 1 for
     % this class
