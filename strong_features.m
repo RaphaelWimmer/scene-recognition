@@ -41,35 +41,44 @@ end
 decision_values = [];
 
 for i=1:15
-    pre_zeroze = zeros((i-1)*100);
-    wonz = ones(100);
-    post_zeroze = zeros(1400);
-    if(i > i)
-        train_class = [pre_zeroze(1,:), wonz(1,:), post_zeroze(1,:)]';
-    else
-        train_class = [wonz(1,:), post_zeroze(1,:)]';
-    end
     
-    pre_zeroze = zeros(sum(test_class_counts(1:i)));
-    wonz = ones(test_class_counts(i));
-    post_zeroze = zeros(sum(test_class_counts(i+1:length(test_class_counts))));
-    if(i > 1)
-        test_class = [pre_zeroze(1,:), wonz(1,:), post_zeroze(1,:)]';
+    % build the vector describing training labels; 0 for not this class, 1
+    % for this class
+    train_class = zeros(num_train_files);
+    train_class = train_class(:,1);
+    train_class((i-1)*100+1:(i-1)*100+100) = 1;
+    
+    % build the vector describing test labels; 0 for not this class, 1 for
+    % this class
+    test_class = zeros(num_test_files);
+    test_class = test_class(:,1);
+    if i > 1
+        test_class(sum(test_class_counts(1:i-1)):sum(test_class_counts(1:i))) = 1;
     else
-        test_class = [wonz(1,:), post_zeroze(1,:)]';
+        test_class(1:sum(test_class_counts(1:i))) = 1;
     end
 
     %# train and test
     model = svmtrain(train_class, K, '-t 4');
-    [predicted_class, accuracy, decision_value] = svmpredict(test_class, KK, model);
-    decision_values(:,i) = decision_value;
+    [predicted_class, ~, decision_value] = svmpredict(test_class, KK, model);
+    decision_values(:,i) = abs(decision_value);
 end
 
 ultimate_decisions = [];
 for i=1:num_test_files
-    [value, idx] = max(decision_values(i,:));
+    [value, idx] = min(decision_values(i,:));
     ultimate_decisions(i) = idx;
 end
+ultimate_decisions = ultimate_decisions';
 
 %# confusion matrix
-C = confusionmat(test_classes, ultimate_decisions')
+C = confusionmat(test_classes, ultimate_decisions)
+
+correct = 0;
+for i=1:num_test_files
+    if ultimate_decisions(i) == test_classes(i)
+        correct = correct + 1;
+    end
+end
+
+accuracy = correct/num_test_files
