@@ -27,10 +27,14 @@ end
 % return pyramid descriptors for all files in filenames
 pyramid_test = BuildPyramid(filenames,test_image_dir,data_dir);
 
-testClass = [0]';
+wonz = ones(142);
+zeroze = zeros(3001-142);
+testClass = [wonz(1,:), zeroze(1,:)]';
 
 %for(i=1:15)
-    trainClass = ones(;
+    wonz = ones(100);
+    zeroze = zeros(1400);
+    trainClass = [wonz(1,:), zeroze(1,:)]';
     % compute histogram intersection kernel
     K = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
     KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
