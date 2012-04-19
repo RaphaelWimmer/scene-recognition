@@ -15,30 +15,45 @@ for f = 1:num_train_files
 end
 
 % return pyramid descriptors for all files in filenames
-pyramid_train = BuildPyramid(filenames,train_image_dir,data_dir);
+%pyramid_train = BuildPyramid(filenames,train_image_dir,data_dir);
 
 % for other parameters, see BuildPyramid
 fnames = dir(fullfile(test_image_dir, '*.jpg'));
 num_test_files = size(fnames,1);
 filenames = cell(num_test_files,1);
 
+current_head = 'not a head';
+test_class_counts = [];
+counter = 0;
+class_idx = 0;
+
 for f = 1:num_test_files
 	filenames{f} = fnames(f).name;
+    if isempty(strfind(fnames(f).name, current_head))
+        if class_idx > 0
+            test_class_counts(class_idx) = counter;
+        end
+        current_head = strtok(fnames(f).name, '-');
+        counter = 1;
+        class_idx = class_idx + 1;
+    else
+        counter = counter + 1;
+    end
 end
+test_class_counts(class_idx) = counter;
 
-% return pyramid descriptors for all files in filenames
-pyramid_test = BuildPyramid(filenames,test_image_dir,data_dir);
-
-% compute histogram intersection kernel
-K = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
-KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
-
-test_class_counts = [141, 260, 228, 160, 208, 274, 310, 192, 256, 115, 116, 211, 110, 189, 215];
 test_classes = [];
 for i=1:15
     truez = ones(test_class_counts(i))*i;
     test_classes = vertcat(test_classes, truez(:,1));
 end
+
+% return pyramid descriptors for all files in filenames
+%pyramid_test = BuildPyramid(filenames,test_image_dir,data_dir);
+
+% compute histogram intersection kernel
+K = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
+KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
 
 decision_values = [];
 

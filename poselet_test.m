@@ -35,8 +35,9 @@ im1.image_file{1}=[data_root '/test.jpg'];
 img = imread(im1.image_file{1});
 
 [bounds_predictions,poselet_hits,torso_predictions]=detect_objects_in_image(img,model);
+numPeopleInScene = length(bounds_predictions);
 
-display_thresh=5.7; % detection rate vs false positive rate threshold
-imshow(img);
-bounds_predictions.select(bounds_predictions.score>display_thresh).draw_bounds;
-torso_predictions.select(bounds_predictions.score>display_thresh).draw_bounds('blue');
+%display_thresh=5.7; % detection rate vs false positive rate threshold
+%imshow(img);
+%bounds_predictions.select(bounds_predictions.score>display_thresh).draw_bounds;
+%torso_predictions.select(bounds_predictions.score>display_thresh).draw_bounds('blue');
