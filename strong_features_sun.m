@@ -3,9 +3,9 @@ NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
 disp('using sun files...');
 
 % set image_dir and data_dir to your actual directories
-train_image_dir = 'data/sun_train'; 
-test_image_dir = 'data/sun_test'; 
-data_dir = 'data/sun_data';
+train_image_dir = 'data/train_sun'; 
+test_image_dir = 'data/test_sun'; 
+data_dir = 'data/data_sun';
 
 % add the libraries strong features code to the path
 path(path,'libraries/spatial_pyramid')
