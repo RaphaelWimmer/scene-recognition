@@ -59,44 +59,44 @@ disp('hist_isecting...');
 train_feature_vect = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
 test_feature_vect = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
 
-if poselets
-    disp('poseletting...');
-    
-    config.DETECTION_IMG_MIN_NUM_PIX = 500^2;  % if the number of pixels in a detection image is < DETECTION_IMG_SIDE^2, scales up the image to meet that threshold
-    config.DETECTION_IMG_MAX_NUM_PIX = 750^2;
-    config.PYRAMID_SCALE_RATIO = 2;
-    
-    load('data/model.mat'); % loads model
-    
-    train_people = [];
-    for f = 1:num_train_files
-        clear output poselet_patches fg_masks;
-        img = imread([train_image_dir, '/', train_filenames{f}]);
-        [bounds_predictions,~,~]=detect_objects_in_image(img,model);
-        num_people_in_scene = length(bounds_predictions);
-        train_people(f) = num_people_in_scene;
-    end
-    
-    test_people = [];
-    for f = 1:num_test_files
-        clear output poselet_patches fg_masks;
-        img = imread([test_image_dir, '/', test_filenames{f}]);
-        [bounds_predictions,~,~]=detect_objects_in_image(img,model);
-        num_people_in_scene = length(bounds_predictions);
-        test_people(f) = num_people_in_scene;
-    end
-    
-    % strap the poselet values onto the feature vectors
-    train_feature_vect = [train_feature_vect, train_people'];
-    test_feature_vect = [test_feature_vect, test_people'];
+disp('poseletting...');
+
+config.DETECTION_IMG_MIN_NUM_PIX = 500^2;  % if the number of pixels in a detection image is < DETECTION_IMG_SIDE^2, scales up the image to meet that threshold
+config.DETECTION_IMG_MAX_NUM_PIX = 750^2;
+config.PYRAMID_SCALE_RATIO = 2;
+
+load('data/model.mat'); % loads model
+
+train_people = [];
+for f = 1:num_train_files
+    disp(['poselets for train ', f, ' of ', num_train_files]);
+    clear output poselet_patches fg_masks;
+    img = imread([train_image_dir, '/', train_filenames{f}]);
+    [bounds_predictions,~,~]=detect_objects_in_image(img,model);
+    num_people_in_scene = length(bounds_predictions);
+    train_people(f) = num_people_in_scene;
 end
+
+test_people = [];
+for f = 1:num_test_files
+    disp(['poselets for test ', f, ' of ', num_test_files]);
+    clear output poselet_patches fg_masks;
+    img = imread([test_image_dir, '/', test_filenames{f}]);
+    [bounds_predictions,~,~]=detect_objects_in_image(img,model);
+    num_people_in_scene = length(bounds_predictions);
+    test_people(f) = num_people_in_scene;
+end
+
+% strap the poselet values onto the feature vectors
+train_feature_vect = [train_feature_vect, train_people'];
+test_feature_vect = [test_feature_vect, test_people'];
 
 decision_values = [];
 
 % make one-vs-all classifiers for each scene type
 % and run it to get a confidence vector for each test image
 for i=1:class_idx
-    
+    disp(['builing classifier for class #', class_idx]);
     % build the vector describing training labels; 0 for not this class, 1
     % for this class
     train_class = zeros(num_train_files);
@@ -115,12 +115,14 @@ for i=1:class_idx
 
     %# train and test
     model = svmtrain(train_class, train_feature_vect, '-t 4');
+    disp('making predictions...');
     [predicted_class, ~, decision_value] = svmpredict(test_class, test_feature_vect, model);
     decision_values(:,i) = abs(decision_value);
 end
 
 % boil down the confidence vectors to just the class with highest
 % confidence for each test image
+disp('finding highest confidence values...');
 ultimate_decisions = [];
 for i=1:num_test_files
     [value, idx] = min(decision_values(i,:));
