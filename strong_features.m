@@ -1,9 +1,9 @@
-NUM_TRAINING_EXAMPLES_PER_CLASS = 100;
+NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
 
 % set image_dir and data_dir to your actual directories
-train_image_dir = 'data/train'; 
-test_image_dir = 'data/test'; 
-data_dir = 'data/data';
+train_image_dir = 'data/sun_train'; 
+test_image_dir = 'data/sun_test'; 
+data_dir = 'data/sun_data';
 
 % for other parameters, see BuildPyramid
 fnames = dir(fullfile(train_image_dir, '*.jpg'));
