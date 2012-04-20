@@ -1,12 +1,11 @@
 NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
 
 % set image_dir and data_dir to your actual directories
-train_image_dir = 'data/train_sun'; % SHIRY flip all of these 
+train_image_dir = 'data/train_sun'; 
 test_image_dir = 'data/test_sun'; 
 data_dir = 'data/data_sun';
 
-% SHIRY
-% add the libraries stron features code to the path
+% add the libraries strong features code to the path
 path(path,'libraries/spatial_pyramid')
 
 % for other parameters, see BuildPyramid
