@@ -71,7 +71,7 @@ if poselets
     train_people = [];
     for f = 1:num_train_files
         clear output poselet_patches fg_masks;
-        img = imread(train_image_dir + train_filenames{f});
+        img = imread([train_image_dir, '/', train_filenames{f}]);
         [bounds_predictions,~,~]=detect_objects_in_image(img,model);
         num_people_in_scene = length(bounds_predictions);
         train_people(f) = num_people_in_scene;
@@ -80,7 +80,7 @@ if poselets
     test_people = [];
     for f = 1:num_test_files
         clear output poselet_patches fg_masks;
-        img = imread(test_image_dir + test_filenames{f});
+        img = imread([test_image_dir, '/', test_filenames{f}]);
         [bounds_predictions,~,~]=detect_objects_in_image(img,model);
         num_people_in_scene = length(bounds_predictions);
         test_people(f) = num_people_in_scene;
