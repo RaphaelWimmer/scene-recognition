@@ -1,5 +1,7 @@
 NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
 
+disp('using sun files...');
+
 % set image_dir and data_dir to your actual directories
 train_image_dir = 'data/sun_train'; 
 test_image_dir = 'data/sun_test'; 
@@ -49,6 +51,7 @@ for i=1:class_idx
     test_classes = vertcat(test_classes, truez(:,1));
 end
 
+disp('hist_isecting...');
 % return pyramid descriptors for all files in train and test
 pyramid_train = BuildPyramid(train_filenames,train_image_dir,data_dir);
 pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir);
@@ -61,7 +64,8 @@ decision_values = [];
 
 % make one-vs-all classifiers for each scene type
 for i=1:class_idx
-    
+    disp(['builing classifier for class #', class_idx]);
+
     % build the vector describing training labels; 0 for not this class, 1
     % for this class
     train_class = zeros(num_train_files);
@@ -80,10 +84,12 @@ for i=1:class_idx
 
     %# train and test
     model = svmtrain(train_class, K, '-t 4');
+    disp('making predictions...');
     [predicted_class, ~, decision_value] = svmpredict(test_class, KK, model);
     decision_values(:,i) = abs(decision_value);
 end
 
+disp('finding highest confidence values...');
 ultimate_decisions = [];
 for i=1:num_test_files
     [value, idx] = min(decision_values(i,:));
