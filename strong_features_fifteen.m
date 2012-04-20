@@ -5,22 +5,22 @@ train_image_dir = 'data/train';
 test_image_dir = 'data/test'; 
 data_dir = 'data/data';
 
+% add the libraries strong features code to the path
+path(path,'libraries/spatial_pyramid')
+
 % for other parameters, see BuildPyramid
-fnames = dir(fullfile(train_image_dir, '*.jpg'));
-num_train_files = size(fnames,1);
-filenames = cell(num_train_files,1);
+train_fnames = dir(fullfile(train_image_dir, '*.jpg'));
+num_train_files = size(train_fnames,1);
+train_filenames = cell(num_train_files,1);
 
 for f = 1:num_train_files
-	filenames{f} = fnames(f).name;
+	train_filenames{f} = train_fnames(f).name;
 end
 
-% return pyramid descriptors for all files in filenames
-%pyramid_train = BuildPyramid(filenames,train_image_dir,data_dir);
-
 % for other parameters, see BuildPyramid
-fnames = dir(fullfile(test_image_dir, '*.jpg'));
-num_test_files = size(fnames,1);
-filenames = cell(num_test_files,1);
+test_fnames = dir(fullfile(test_image_dir, '*.jpg'));
+num_test_files = size(test_fnames,1);
+test_filenames = cell(num_test_files,1);
 
 current_head = 'not a head';
 test_class_counts = [];
@@ -28,28 +28,30 @@ counter = 0;
 class_idx = 0;
 
 for f = 1:num_test_files
-	filenames{f} = fnames(f).name;
-    if isempty(strfind(fnames(f).name, current_head))
+	test_filenames{f} = test_fnames(f).name;
+    if isempty(strfind(test_fnames(f).name, current_head))
         if class_idx > 0
             test_class_counts(class_idx) = counter;
         end
-        current_head = strtok(fnames(f).name, '-');
+        current_head = strtok(test_fnames(f).name, '-');
         counter = 1;
         class_idx = class_idx + 1;
     else
         counter = counter + 1;
     end
 end
+
 test_class_counts(class_idx) = counter;
 
 test_classes = [];
-for i=1:15
+for i=1:class_idx
     truez = ones(test_class_counts(i))*i;
     test_classes = vertcat(test_classes, truez(:,1));
 end
 
-% return pyramid descriptors for all files in filenames
-%pyramid_test = BuildPyramid(filenames,test_image_dir,data_dir);
+% return pyramid descriptors for all files in train and test
+pyramid_train = BuildPyramid(train_filenames,train_image_dir,data_dir);
+pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir);
 
 % compute histogram intersection kernel
 K = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
@@ -57,7 +59,8 @@ KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
 
 decision_values = [];
 
-for i=1:15
+% make one-vs-all classifiers for each scene type
+for i=1:class_idx
     
     % build the vector describing training labels; 0 for not this class, 1
     % for this class
