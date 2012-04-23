@@ -1,0 +1,38 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[all]{xy}
+\usepackage{color}
+\usepackage[pdftex]{graphicx}
+
+\usepackage{fullpage}
+
+\begin{document}
+
+\title{Project XXX}
+\author{Shiry Ginosar \and Valkyrie Savage}
+
+\maketitle
+
+\abstract{Bla bla bla}
+
+\section{Introduction}
+Bla bla bla.
+
+\section{Data preprocessing}
+Given the runtime of spatial pyramids on the sun dataset and because we only have one machine to run on, we only used the scene categories marked as "typical scenes" for all the object categories that have something to do with person/people etc.
+
+From these, we choose the scene categories that have at least 100 images in them.
+
+Then, we use 50 images for training and the rest for testing. We do not change the training and testing images between algorithms.
+
+Ideally we would have run this on all scenes (maybe if we had a cluster).
+
+\section{Experiments}
+1. strong features
+2. strong features + people counts in whole picture
+3. strong features + people counts in spatial pyramids
+
+\bibliographystyle{plain}
+\bibliography{report}
+\end{document}
