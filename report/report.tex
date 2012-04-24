@@ -30,8 +30,8 @@ Ideally we would have run this on all scenes (maybe if we had a cluster).
 
 \section{Experiments}
 1. strong features
-2. strong features + people counts in whole picture
-3. strong features + people counts in spatial pyramids
+2. strong features + people counts in whole picture -> NOTE! This is currently set to run with "fast detection" settings. May want to re-run it with optimal settings.
+3. strong features + people counts in spatial pyramids -> NOTE! In the original pyramid intersection kernel she penalizes matches that occure in larger cells because they involve increasingly dissimilar features. Is that really the case here? We would think that larger people should be just as ok. So may want to change that.
 
 \bibliographystyle{plain}
 \bibliography{report}
