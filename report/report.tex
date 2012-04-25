@@ -24,9 +24,11 @@ Given the runtime of spatial pyramids on the sun dataset and because we only hav
 
 From these, we choose the scene categories that have at least 100 images in them.
 
-Then, we use 50 images for training and the rest for testing. We do not change the training and testing images between algorithms.
+Then, we use 50 images for training and up to 200 from the remaining images for testing. We do not change the training and testing images between algorithms.
 
 Ideally we would have run this on all scenes (maybe if we had a cluster).
+
+For building texton dictionary - we took 300 centroids rather than 200. We built the dictionary based on 300 randomly selected images from the training set rather than her original 50.
 
 \section{Experiments}
 1. strong features
