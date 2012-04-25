@@ -67,9 +67,9 @@ disp('poseletting...');
 
 % These settings are for FAST DETECTION. If possible, we should comment them
 % out and let the initialization of the config choose the optimal settings.
-config.DETECTION_IMG_MIN_NUM_PIX = 500^2;  % if the number of pixels in a detection image is < DETECTION_IMG_SIDE^2, scales up the image to meet that threshold
-config.DETECTION_IMG_MAX_NUM_PIX = 750^2;
-config.PYRAMID_SCALE_RATIO = 2;
+%config.DETECTION_IMG_MIN_NUM_PIX = 500^2;  % if the number of pixels in a detection image is < DETECTION_IMG_SIDE^2, scales up the image to meet that threshold
+%config.DETECTION_IMG_MAX_NUM_PIX = 750^2;
+%config.PYRAMID_SCALE_RATIO = 2;
 
 load('data/model.mat'); % loads model
 
