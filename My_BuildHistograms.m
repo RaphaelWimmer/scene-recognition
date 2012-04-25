@@ -1,5 +1,5 @@
-function [ H_all ] = My_BuildHistograms( imageFileList, dataBaseDir, featureSuffix, dictionarySize, canSkip )
-%function [ H_all ] = My_BuildHistograms( imageFileList, dataBaseDir, featureSuffix, dictionarySize, canSkip )
+function [ H_all ] = My_BuildHistograms( imageFileList, dataBaseDir, imageDir )
+%function [ H_all ] = My_BuildHistograms( imageFileList, dataBaseDir, imageDir )
 %
 %find texton labels of patches and compute texton histograms of all images
 %   
@@ -27,17 +27,9 @@ fprintf('Building Histograms\n\n');
 
 %% parameters
 
-if(nargin<2)
-    featureSuffix = 'bla';
-end
-
-if(nargin<3)
-    dictionarySize = 1;
-end
-
-if(nargin<4)
-    canSkip = 0;
-end
+featureSuffix = 'bla';
+dictionarySize = 1;
+canSkip = 0;
 
 %% load texton dictionary (all texton centers)
 
@@ -75,7 +67,7 @@ for f = 1:size(imageFileList,1)
     % Poseleting
     confidence = 5.7; % this is the confidence level set at the demo for poselets
     clear output poselet_patches fg_masks;
-    img = imread(imageFName);
+    img = imread([imageDir, '/', imageFName]);
     [bounds_predictions,~,~]=detect_objects_in_image(img,model);
     all_bounds = bounds_predictions.select(bounds_predictions.score > confidence).bounds; % only count the things we think are people
 

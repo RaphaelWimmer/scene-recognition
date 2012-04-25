@@ -6,10 +6,11 @@ init;
 
 % gathering training and testing filenames and category (class) labels.
 disp('using sun files...');
-NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
-train_image_dir = 'data/sun_train';
-test_image_dir = 'data/sun_test';
-data_dir = 'data/sun_data';
+% FIX ALL THIS SHIT
+NUM_TRAINING_EXAMPLES_PER_CLASS = 2;
+train_image_dir = 'data/tiny_train';
+test_image_dir = 'data/tiny_test';
+data_dir = 'data/tiny_data';
 
 % for other parameters, see BuildPyramid
 train_fnames = dir(fullfile(train_image_dir, '*.jpg'));
@@ -73,16 +74,16 @@ disp('poseletting...');
 %config.PYRAMID_SCALE_RATIO = 2;
 
 
-My_BuildHistograms(train_filenames,data_dir);
-pyramid_poselet_train = My_CompilePyramid(train_filenames,data_dir,'_poselets_.mat');
+My_BuildHistograms(train_filenames,data_dir,train_image_dir);
+pyramid_poselet_train = My_CompilePyramid(train_filenames,data_dir,'_poselet_ind_1.mat');
 
-My_BuildHistograms(test_filenames,data_dir);
-pyramid_poselet_test = My_CompilePyramid(test_filenames,data_dir,'_poselets_.mat');
+My_BuildHistograms(test_filenames,data_dir,test_image_dir);
+pyramid_poselet_test = My_CompilePyramid(test_filenames,data_dir,'_poselet_ind_1.mat');
 
 % compute histogram intersection kernel for poselets
 disp('hist_isecting for poselets...');
-train_people = [(1:num_train_files)' , hist_isect(pyramid_poselet_train, pyramid_poselet_train)]; 
-test_people = [(1:num_test_files)' , hist_isect(pyramid_poselet_test, pyramid_poselet_train)];
+train_people = hist_isect(pyramid_poselet_train, pyramid_poselet_train); 
+test_people = hist_isect(pyramid_poselet_test, pyramid_poselet_train);
 
 
 % THIS IS HOW YOU POSELET
@@ -108,15 +109,15 @@ test_people = [(1:num_test_files)' , hist_isect(pyramid_poselet_test, pyramid_po
 %end
 
 % strap the poselet values onto the feature vectors
-train_feature_vect = [train_feature_vect, train_people'];
-test_feature_vect = [test_feature_vect, test_people'];
+train_feature_vect = [train_feature_vect, train_people];
+test_feature_vect = [test_feature_vect, test_people];
 
 decision_values = [];
 
 % make one-vs-all classifiers for each scene type
 % and run it to get a confidence vector for each test image
 for i=1:class_idx
-    disp(['builing classifier for class #', class_idx]);
+    disp(['building classifier for class #', class_idx]);
     % build the vector describing training labels; 0 for not this class, 1
     % for this class
     train_class = zeros(num_train_files);

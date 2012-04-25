@@ -40,7 +40,7 @@ end
 
 binsHigh = 2^(pyramidLevels-1);
 
-pyramid_all = zeros(f, pyramidLevels);
+pyramid_all = [];
 
 for f = 1:size(imageFileList,1)
     %% load image
@@ -61,8 +61,8 @@ for f = 1:size(imageFileList,1)
     load(in_fname, 'poselet_ind');
     
     %% get width and height of input image
-    wid = texton_ind.wid;
-    hgt = texton_ind.hgt;
+    wid = poselet_ind.wid;
+    hgt = poselet_ind.hgt;
 
     fprintf('Loaded %s: wid %d, hgt %d\n', ...
              imageFName, wid, hgt);
@@ -117,7 +117,7 @@ for f = 1:size(imageFileList,1)
     % save pyramid
     save(outFName, 'pyramid');
 
-    pyramid_all(f, :) = pyramid;
+    pyramid_all = [pyramid_all; pyramid];
 
 end % f
 
