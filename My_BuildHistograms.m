@@ -32,24 +32,25 @@ if(nargin<2)
 end
 
 if(nargin<3)
-    dictionarySize = 200
+    dictionarySize = 1;
 end
 
 if(nargin<4)
-    canSkip = 0
+    canSkip = 0;
 end
-
-% loading the poseletes model weeeeeee
-load('data/model.mat'); % loads model
 
 %% load texton dictionary (all texton centers)
 
 %inFName = fullfile(dataBaseDir, sprintf('dictionary_%d.mat', dictionarySize));
 %load(inFName,'dictionary');
+
+% loading the poseletes model weeeeeee
+load('data/model.mat'); % loads model
+
 fprintf('Loaded poselets model');
 
 %% compute texton labels of patches and whole-image histograms
-H_all = [];
+H_all = zeros(size(imageFileList,1), 1);
 
 for f = 1:size(imageFileList,1)
 
@@ -62,7 +63,7 @@ for f = 1:size(imageFileList,1)
     if(size(dir(outFName),1)~=0 && size(dir(outFName2),1)~=0 && canSkip)
         fprintf('Skipping %s\n', imageFName);
         load(outFName2, 'H');
-        H_all = [H_all; H];
+        H_all(f, :) = H;
         continue;
     end
     
@@ -70,34 +71,28 @@ for f = 1:size(imageFileList,1)
    % load(inFName, 'features');
    % ndata = size(features.data,1);
    % fprintf('Loaded %s, %d descriptors\n', inFName, ndata);
+   
+    % Poseleting
+    confidence = 5.7; % this is the confidence level set at the demo for poselets
+    clear output poselet_patches fg_masks;
+    img = imread(imageFName);
+    [bounds_predictions,~,~]=detect_objects_in_image(img,model);
+    all_bounds = bounds_predictions.select(bounds_predictions.score > confidence).bounds; % only count the things we think are people
 
-    %% find texton indices and compute histogram 
-    texton_ind.data = zeros(ndata,1);
-    texton_ind.x = features.x;
-    texton_ind.y = features.y;
-    texton_ind.wid = features.wid;
-    texton_ind.hgt = features.hgt;
-    %run in batches to keep the memory foot print small
-    batchSize = 10000;
-    if ndata <= batchSize
-        dist_mat = sp_dist2(features.data, dictionary);
-        [min_dist, min_ind] = min(dist_mat, [], 2);
-        texton_ind.data = min_ind;
-    else
-        for j = 1:batchSize:ndata
-            lo = j;
-            hi = min(j+batchSize-1,ndata);
-			dist_mat = sp_dist2(features.data(lo:hi,:), dictionary);
-            [min_dist, min_ind] = min(dist_mat, [], 2);
-            texton_ind.data(lo:hi,:) = min_ind;
-        end
-    end
+    %% find all bounds in the image 
+    poselet_ind.x = all_bounds(1,:);
+    poselet_ind.y = all_bounds(2,:);
+    poselet_ind.pWid = all_bounds(3,:);
+    poselet_ind.pHgt = all_bounds(4,:);
+    poselet_ind.wid = size(img, 2);
+    poselet_ind.hgt = size(img, 1);
 
-    H = hist(texton_ind.data, 1:dictionarySize);
-    H_all = [H_all; H];
+    %H = hist(size(all_bounds, 2), 1);
+    H = size(all_bounds, 2); % We are only counting the number of people in the whole image without regard to what they are doing. So the size of the dictionary is always 1.
+    H_all(f, :) = H;
 	
     %% save texton indices and histograms
-    save(outFName, 'texton_ind');
+    save(outFName, 'poselet_ind');
     save(outFName2, 'H');
 end
 
