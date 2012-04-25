@@ -51,6 +51,10 @@ for i=1:class_idx
 end
 
 % return pyramid descriptors for all files in train and test
+% return pyramid descriptors for all files in train and test
+maxImageSize = 1000; % Larger than this will be downsampled.
+dictionarySize = 300; % Increased from her recommended 200 according to the SUN paper.
+numTextonImages = 300; % The number of randomly selected images to build a dictionary from.
 pyramid_train = BuildPyramid(train_filenames,train_image_dir,data_dir);
 pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir);
 
@@ -70,12 +74,13 @@ config.PYRAMID_SCALE_RATIO = 2;
 load('data/model.mat'); % loads model
 
 train_people = [];
+confidence = 5.7; % this is the confidence level set at the demo for poselets
 for f = 1:num_train_files
     disp(['poselets for train ', f, ' of ', num_train_files]);
     clear output poselet_patches fg_masks;
     img = imread([train_image_dir, '/', train_filenames{f}]);
     [bounds_predictions,~,~]=detect_objects_in_image(img,model);
-    num_people_in_scene = length(bounds_predictions);
+    num_people_in_scene = size(bounds_predictions.select(bounds_predictions.score > confidence).bounds, 2); % only count the things we think are people
     train_people(f) = num_people_in_scene;
 end
 
@@ -85,7 +90,7 @@ for f = 1:num_test_files
     clear output poselet_patches fg_masks;
     img = imread([test_image_dir, '/', test_filenames{f}]);
     [bounds_predictions,~,~]=detect_objects_in_image(img,model);
-    num_people_in_scene = length(bounds_predictions);
+    num_people_in_scene = size(bounds_predictions.select(bounds_predictions.score > confidence).bounds, 2); % only count the things we think are people
     test_people(f) = num_people_in_scene;
 end
 

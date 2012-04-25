@@ -51,11 +51,14 @@ for i=1:class_idx
     test_classes = vertcat(test_classes, truez(:,1));
 end
 
-disp('hist_isecting...');
 % return pyramid descriptors for all files in train and test
-pyramid_train = BuildPyramid(train_filenames,train_image_dir,data_dir);
-pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir);
+maxImageSize = 1000; % Larger than this will be downsampled.
+dictionarySize = 300; % Increased from her recommended 200 according to the SUN paper.
+numTextonImages = 300; % The number of randomly selected images to build a dictionary from.
+pyramid_train = BuildPyramid(train_filenames,train_image_dir,data_dir,maxImageSize,dictionarySize,numTextonImages);
+pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir,maxImageSize,dictionarySize,numTextonImages);
 
+disp('hist_isecting...');
 % compute histogram intersection kernel
 K = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
 KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
