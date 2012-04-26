@@ -23,12 +23,10 @@ function [ H_all ] = My_BuildHistograms( imageFileList, dataBaseDir, imageDir )
 %  file is found in dataBaseDir. This is very useful if you just want to
 %  update some of the data or if you've added new images.
 
-fprintf('Building Histograms\n\n');
+fprintf('Building Poselet Histograms\n\n');
 
 %% parameters
 
-featureSuffix = 'bla';
-dictionarySize = 1;
 canSkip = 0;
 
 %% load texton dictionary (all texton centers)
@@ -50,8 +48,8 @@ for f = 1:size(imageFileList,1)
     [dirN base] = fileparts(imageFName);
     baseFName = fullfile(dirN, base);
     
-    outFName = fullfile(dataBaseDir, sprintf('%s_poselet_ind_%d.mat', baseFName, dictionarySize));
-    outFName2 = fullfile(dataBaseDir, sprintf('%s_poselet_hist_%d.mat', baseFName, dictionarySize));
+    outFName = fullfile(dataBaseDir, sprintf('%s_poselet_ind.mat', baseFName));
+    outFName2 = fullfile(dataBaseDir, sprintf('%s_poselet_hist.mat', baseFName));
     if(size(dir(outFName),1)~=0 && size(dir(outFName2),1)~=0 && canSkip)
         fprintf('Skipping %s\n', imageFName);
         load(outFName2, 'H');
@@ -89,7 +87,7 @@ for f = 1:size(imageFileList,1)
 end
 
 %% save histograms of all images in this directory in a single file
-outFName = fullfile(dataBaseDir, sprintf('histograms_%d.mat', dictionarySize));
+outFName = fullfile(dataBaseDir, 'poselet_histograms.mat');
 save(outFName, 'H_all', '-ascii');
 
 

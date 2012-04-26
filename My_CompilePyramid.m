@@ -1,4 +1,4 @@
-function [ pyramid_all ] = CompilePyramid( imageFileList, dataBaseDir, poseletSuffix, dictionarySize, pyramidLevels, canSkip )
+function [ pyramid_all ] = CompilePyramid( imageFileList, dataBaseDir, poseletSuffix )
 %function [ pyramid_all ] = CompilePyramid( imageFileList, dataBaseDir, poseletSuffix, dictionarySize, pyramidLevels, canSkip )
 %
 % Generate the pyramid from the texton lablels
@@ -25,18 +25,8 @@ function [ pyramid_all ] = CompilePyramid( imageFileList, dataBaseDir, poseletSu
 fprintf('Building Spatial Pyramid of PEOPLEEEEEE\n\n');
 
 %% parameters
-
-if(nargin<4)
-    dictionarySize = 1 % only count of people
-end
-
-if(nargin<5)
-    pyramidLevels = 4
-end
-
-if(nargin<6)
-    canSkip = 0
-end
+pyramidLevels = 4;
+canSkip = 0;
 
 binsHigh = 2^(pyramidLevels-1);
 
@@ -48,7 +38,7 @@ for f = 1:size(imageFileList,1)
     [dirN base] = fileparts(imageFName);
     baseFName = fullfile(dirN, base);
     
-    outFName = fullfile(dataBaseDir, sprintf('%s_poselet_pyramid_%d_%d.mat', baseFName, dictionarySize, pyramidLevels));
+    outFName = fullfile(dataBaseDir, sprintf('%s_poselet_pyramid_%d.mat', baseFName, pyramidLevels));
     if(size(dir(outFName),1)~=0 && canSkip)
         fprintf('Skipping %s\n', imageFName);
         load(outFName, 'pyramid');
@@ -67,52 +57,37 @@ for f = 1:size(imageFileList,1)
     fprintf('Loaded %s: wid %d, hgt %d\n', ...
              imageFName, wid, hgt);
 
-    %% compute histogram at the finest level
     pyramid_cell = cell(pyramidLevels,1);
-    pyramid_cell{1} = zeros(binsHigh, binsHigh, dictionarySize);
-
     temp = poselet_ind.x;
-    
-    for i=1:binsHigh
-        for j=1:binsHigh
 
-            % find the coordinates of the current bin
-            x_lo = floor(wid/binsHigh * (i-1));
-            x_hi = floor(wid/binsHigh * i);
-            y_lo = floor(hgt/binsHigh * (j-1));
-            y_hi = floor(hgt/binsHigh * j);
-            
-            poselet_patch = length(temp( (poselet_ind.x > x_lo) & (poselet_ind.x + poselet_ind.pWid <= x_hi) & ...
-                                            (poselet_ind.y > y_lo) & (poselet_ind.y + poselet_ind.pHgt <= y_hi)));
-            
-            % make histogram of features in bin
-            % pyramid_cell{1}(i,j,:) = hist(texton_patch, 1:dictionarySize)./length(texton_ind.data);
-            pyramid_cell{1}(i,j,:) = poselet_patch;
-        end
-    end
-
-    %% compute histograms at the coarser levels
-    num_bins = binsHigh/2;
-    for l = 2:pyramidLevels
-        pyramid_cell{l} = zeros(num_bins, num_bins, dictionarySize);
-        for i=1:num_bins
-            for j=1:num_bins
-                pyramid_cell{l}(i,j,:) = ...
-                pyramid_cell{l-1}(2*i-1,2*j-1,:) + pyramid_cell{l-1}(2*i,2*j-1,:) + ...
-                pyramid_cell{l-1}(2*i-1,2*j,:) + pyramid_cell{l-1}(2*i,2*j,:);
+    %% compute counts
+    for l = 1:pyramidLevels
+        binWidthAtThisLevel = wid/(2^l-1);
+        binHeightAtThisLevel = hgt/(2^l-1);
+        for i=1:binsHigh/2^l
+            for j=1:binsHigh/2^l
+                % find the coordinates of the current bin in the current
+                % pyramid level
+                x_lo = floor(wid/binWidthAtThisLevel * (i-1));
+                x_hi = floor(wid/binWidthAtThisLevel * i);
+                y_lo = floor(hgt/binHeightAtThisLevel * (j-1));
+                y_hi = floor(hgt/binHeightAtThisLevel * j);
+                
+                poselet_patch = length(temp( (poselet_ind.x > x_lo) & (poselet_ind.x + poselet_ind.pWid <= x_hi) & ...
+                    (poselet_ind.y > y_lo) & (poselet_ind.y + poselet_ind.pHgt <= y_hi)));
+                
+                % make histogram of features in bin
+                % pyramid_cell{1}(i,j,:) = hist(texton_patch, 1:dictionarySize)./length(texton_ind.data);
+                pyramid_cell{l}(i,j,:) = poselet_patch;
             end
         end
-        num_bins = num_bins/2;
     end
 
-    %% stack all the histograms with appropriate weights
+    %% stack all the counts
     pyramid = [];
-    for l = 1:pyramidLevels-1
-        % pyramid = [pyramid pyramid_cell{l}(:)' .* 2^(-l)];
+    for l = 1:pyramidLevels
         pyramid = [pyramid pyramid_cell{l}(:)']; % We do not penalize for large people
     end
-    %pyramid = [pyramid pyramid_cell{pyramidLevels}(:)' .* 2^(1-pyramidLevels)];
-    pyramid = [pyramid pyramid_cell{pyramidLevels}(:)'];
     
     % save pyramid
     save(outFName, 'pyramid');
@@ -121,7 +96,7 @@ for f = 1:size(imageFileList,1)
 
 end % f
 
-outFName = fullfile(dataBaseDir, sprintf('pyramids_all_%d_%d.mat', dictionarySize, pyramidLevels));
+outFName = fullfile(dataBaseDir, sprintf('poselet_pyramids_all_%d.mat', pyramidLevels));
 save(outFName, 'pyramid_all');
 
 

@@ -60,11 +60,6 @@ numTextonImages = 300; % The number of randomly selected images to build a dicti
 pyramid_train = BuildPyramid(train_filenames,train_image_dir,data_dir,maxImageSize,dictionarySize,numTextonImages);
 pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir,maxImageSize,dictionarySize,numTextonImages);
 
-% compute histogram intersection kernel
-disp('hist_isecting...');
-train_feature_vect = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
-test_feature_vect = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
-
 disp('poseletting...');
 
 % These settings are for FAST DETECTION. If possible, we should comment them
@@ -75,44 +70,21 @@ disp('poseletting...');
 
 
 My_BuildHistograms(train_filenames,data_dir,train_image_dir);
-pyramid_poselet_train = My_CompilePyramid(train_filenames,data_dir,'_poselet_ind_1.mat');
+pyramid_poselet_train = My_CompilePyramid(train_filenames,data_dir,'_poselet_ind.mat');
 
 My_BuildHistograms(test_filenames,data_dir,test_image_dir);
-pyramid_poselet_test = My_CompilePyramid(test_filenames,data_dir,'_poselet_ind_1.mat');
+pyramid_poselet_test = My_CompilePyramid(test_filenames,data_dir,'_poselet_ind.mat');
 
-% compute histogram intersection kernel for poselets
-disp('hist_isecting for poselets...');
-train_people = hist_isect(pyramid_poselet_train, pyramid_poselet_train); 
-test_people = hist_isect(pyramid_poselet_test, pyramid_poselet_train);
+% strap the poselet values onto the SIFT values
+train_feature_vect = [pyramid_train, pyramid_poselet_train];
+test_feature_vect = [pyramid_test, pyramid_poselet_test];
 
+% compute histogram intersection kernel
+disp('creating histogram intersection kernel...');
+K = [(1:num_train_files)' , hist_isect(train_feature_vect, train_feature_vect)]; 
+KK = [(1:num_test_files)' , hist_isect(test_feature_vect, train_feature_vect)];
 
-% THIS IS HOW YOU POSELET
-%train_people = [];
-%confidence = 5.7; % this is the confidence level set at the demo for poselets
-%for f = 1:num_train_files
-%    disp(['poselets for train ', f, ' of ', num_train_files]);
-%    clear output poselet_patches fg_masks;
-%    img = imread([train_image_dir, '/', train_filenames{f}]);
-%    [bounds_predictions,~,~]=detect_objects_in_image(img,model);
-%    num_people_in_scene = size(bounds_predictions.select(bounds_predictions.score > confidence).bounds, 2); % only count the things we think are people
-%    train_people(f) = num_people_in_scene;
-%end
-
-%test_people = [];
-%for f = 1:num_test_files
-%    disp(['poselets for test ', f, ' of ', num_test_files]);
-%    clear output poselet_patches fg_masks;
-%    img = imread([test_image_dir, '/', test_filenames{f}]);
-%    [bounds_predictions,~,~]=detect_objects_in_image(img,model);
-%    num_people_in_scene = size(bounds_predictions.select(bounds_predictions.score > confidence).bounds, 2); % only count the things we think are people
-%    test_people(f) = num_people_in_scene;
-%end
-
-% strap the poselet values onto the feature vectors
-train_feature_vect = [train_feature_vect, train_people];
-test_feature_vect = [test_feature_vect, test_people];
-
-decision_values = [];
+decision_values = zeros(num_test_files, class_idx);
 
 % make one-vs-all classifiers for each scene type
 % and run it to get a confidence vector for each test image
@@ -135,16 +107,16 @@ for i=1:class_idx
     end
 
     %# train and test
-    model = svmtrain(train_class, train_feature_vect, '-t 4');
+    model = svmtrain(train_class, K, '-t 4');
     disp('making predictions...');
-    [predicted_class, ~, decision_value] = svmpredict(test_class, test_feature_vect, model);
+    [predicted_class, ~, decision_value] = svmpredict(test_class, KK, model);
     decision_values(:,i) = abs(decision_value);
 end
 
 % boil down the confidence vectors to just the class with highest
 % confidence for each test image
 disp('finding highest confidence values...');
-ultimate_decisions = [];
+ultimate_decisions = zeros(num_test_files, 1);
 for i=1:num_test_files
     [value, idx] = min(decision_values(i,:));
     ultimate_decisions(i) = idx;
