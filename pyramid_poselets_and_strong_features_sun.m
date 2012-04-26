@@ -44,10 +44,13 @@ for f = 1:num_test_files
         counter = counter + 1;
     end
 end
-test_class_counts(class_idx) = counter;
+
+num_classes = class_idx;
+
+test_class_counts(num_classes) = counter;
 
 test_classes = [];
-for i=1:class_idx
+for i=1:num_classes
     truez = ones(test_class_counts(i))*i;
     test_classes = vertcat(test_classes, truez(:,1));
 end
@@ -84,12 +87,12 @@ disp('creating histogram intersection kernel...');
 K = [(1:num_train_files)' , hist_isect(train_feature_vect, train_feature_vect)]; 
 KK = [(1:num_test_files)' , hist_isect(test_feature_vect, train_feature_vect)];
 
-decision_values = zeros(num_test_files, class_idx);
+decision_values = zeros(num_test_files, num_classes);
 
 % make one-vs-all classifiers for each scene type
 % and run it to get a confidence vector for each test image
-for i=1:class_idx
-    disp(['building classifier for class #', class_idx]);
+for i=1:num_classes
+    disp(['building classifier for class #', i]);
     % build the vector describing training labels; 0 for not this class, 1
     % for this class
     train_class = zeros(num_train_files);

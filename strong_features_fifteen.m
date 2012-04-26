@@ -43,10 +43,12 @@ for f = 1:num_test_files
     end
 end
 
-test_class_counts(class_idx) = counter;
+num_classes = class_idx;
+
+test_class_counts(num_classes) = counter;
 
 test_classes = [];
-for i=1:class_idx
+for i=1:num_classes
     truez = ones(test_class_counts(i))*i;
     test_classes = vertcat(test_classes, truez(:,1));
 end
@@ -63,8 +65,8 @@ KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
 decision_values = [];
 
 % make one-vs-all classifiers for each scene type
-for i=1:class_idx
-    disp(['builing classifier for class #', class_idx]);
+for i=1:num_classes
+    disp(['builing classifier for class #', i]);
 
     % build the vector describing training labels; 0 for not this class, 1
     % for this class

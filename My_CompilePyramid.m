@@ -64,8 +64,8 @@ for f = 1:size(imageFileList,1)
     for l = 1:pyramidLevels
         binWidthAtThisLevel = wid/(2^l-1);
         binHeightAtThisLevel = hgt/(2^l-1);
-        for i=1:binsHigh/2^l
-            for j=1:binsHigh/2^l
+        for i=1:floor(wid/binWidthAtThisLevel) %binsHigh/2^l
+            for j=1:floor(hgt/binHeightAtThisLevel) %binsHigh/2^l
                 % find the coordinates of the current bin in the current
                 % pyramid level
                 x_lo = floor(wid/binWidthAtThisLevel * (i-1));
@@ -73,12 +73,12 @@ for f = 1:size(imageFileList,1)
                 y_lo = floor(hgt/binHeightAtThisLevel * (j-1));
                 y_hi = floor(hgt/binHeightAtThisLevel * j);
                 
-                poselet_patch = length(temp( (poselet_ind.x > x_lo) & (poselet_ind.x + poselet_ind.pWid <= x_hi) & ...
-                    (poselet_ind.y > y_lo) & (poselet_ind.y + poselet_ind.pHgt <= y_hi)));
+                poselet_count = length(temp((poselet_ind.x > x_lo) & (poselet_ind.x + poselet_ind.pWid <= x_hi) & ...
+                                            (poselet_ind.y > y_lo) & (poselet_ind.y + poselet_ind.pHgt <= y_hi)));
                 
                 % make histogram of features in bin
                 % pyramid_cell{1}(i,j,:) = hist(texton_patch, 1:dictionarySize)./length(texton_ind.data);
-                pyramid_cell{l}(i,j,:) = poselet_patch;
+                pyramid_cell{l}(i,j,:) = poselet_count;
             end
         end
     end
@@ -98,6 +98,6 @@ end % f
 
 outFName = fullfile(dataBaseDir, sprintf('poselet_pyramids_all_%d.mat', pyramidLevels));
 save(outFName, 'pyramid_all');
-
+pyramid_all
 
 end
