@@ -92,7 +92,9 @@ decision_values = zeros(num_test_files, num_classes);
 % make one-vs-all classifiers for each scene type
 % and run it to get a confidence vector for each test image
 for i=1:num_classes
-    disp(['building classifier for class #', i]);
+    disp('building classifier for class #');
+    disp(i);
+
     % build the vector describing training labels; 0 for not this class, 1
     % for this class
     train_class = zeros(num_train_files);

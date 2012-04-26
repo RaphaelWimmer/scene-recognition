@@ -1,7 +1,7 @@
-function [ pyramid_all ] = CompilePyramid( imageFileList, dataBaseDir, poseletSuffix )
-%function [ pyramid_all ] = CompilePyramid( imageFileList, dataBaseDir, poseletSuffix, dictionarySize, pyramidLevels, canSkip )
+function [ pyramid_all ] = My_CompilePyramid( imageFileList, dataBaseDir, poseletSuffix )
+%function [ pyramid_all ] = My_CompilePyramid( imageFileList, dataBaseDir, poseletSuffix )
 %
-% Generate the pyramid from the texton lablels
+% Generate the pyramid from the poselet lablels
 %
 % For each image the texton labels are loaded. Then the histograms are
 % calculated for the finest level. The rest of the pyramid levels are
@@ -26,7 +26,6 @@ fprintf('Building Spatial Pyramid of PEOPLEEEEEE\n\n');
 
 %% parameters
 pyramidLevels = 4;
-canSkip = 0;
 
 binsHigh = 2^(pyramidLevels-1);
 
@@ -39,7 +38,7 @@ for f = 1:size(imageFileList,1)
     baseFName = fullfile(dirN, base);
     
     outFName = fullfile(dataBaseDir, sprintf('%s_poselet_pyramid_%d.mat', baseFName, pyramidLevels));
-    if(size(dir(outFName),1)~=0 && canSkip)
+    if(size(dir(outFName),1)~=0)
         fprintf('Skipping %s\n', imageFName);
         load(outFName, 'pyramid');
         pyramid_all(f, :) = pyramid;
@@ -47,7 +46,7 @@ for f = 1:size(imageFileList,1)
     end
     
     %% load poselet indices
-    in_fname = fullfile(dataBaseDir, sprintf('%s%s', baseFName, poseletSuffix)); % WHAT IS THE POSELET SUFFIX??
+    in_fname = fullfile(dataBaseDir, sprintf('%s%s', baseFName, poseletSuffix));
     load(in_fname, 'poselet_ind');
     
     %% get width and height of input image
@@ -61,23 +60,25 @@ for f = 1:size(imageFileList,1)
     temp = poselet_ind.x;
 
     %% compute counts
-    for l = 1:pyramidLevels
-        binWidthAtThisLevel = wid/(2^l-1);
-        binHeightAtThisLevel = hgt/(2^l-1);
-        for i=1:floor(wid/binWidthAtThisLevel) %binsHigh/2^l
-            for j=1:floor(hgt/binHeightAtThisLevel) %binsHigh/2^l
+    for l = (pyramidLevels:-1:1)
+        binWidthAtThisLevel = wid/(2^(l-1));
+        binHeightAtThisLevel = hgt/(2^(l-1));
+        for i=1:floor(wid/binWidthAtThisLevel)
+            for j=1:floor(hgt/binHeightAtThisLevel)
                 % find the coordinates of the current bin in the current
                 % pyramid level
-                x_lo = floor(wid/binWidthAtThisLevel * (i-1));
-                x_hi = floor(wid/binWidthAtThisLevel * i);
-                y_lo = floor(hgt/binHeightAtThisLevel * (j-1));
-                y_hi = floor(hgt/binHeightAtThisLevel * j);
+                x_lo = floor(binWidthAtThisLevel * (i-1));
+                x_hi = floor(binWidthAtThisLevel * i);
+                y_lo = floor(binHeightAtThisLevel * (j-1));
+                y_hi = floor(binHeightAtThisLevel * j);
                 
                 poselet_count = length(temp((poselet_ind.x > x_lo) & (poselet_ind.x + poselet_ind.pWid <= x_hi) & ...
                                             (poselet_ind.y > y_lo) & (poselet_ind.y + poselet_ind.pHgt <= y_hi)));
                 
+                % zero out the poselets that we found
+                
+                
                 % make histogram of features in bin
-                % pyramid_cell{1}(i,j,:) = hist(texton_patch, 1:dictionarySize)./length(texton_ind.data);
                 pyramid_cell{l}(i,j,:) = poselet_count;
             end
         end
@@ -98,6 +99,5 @@ end % f
 
 outFName = fullfile(dataBaseDir, sprintf('poselet_pyramids_all_%d.mat', pyramidLevels));
 save(outFName, 'pyramid_all');
-pyramid_all
 
 end

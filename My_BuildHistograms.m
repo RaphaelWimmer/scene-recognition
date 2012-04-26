@@ -25,21 +25,12 @@ function [ H_all ] = My_BuildHistograms( imageFileList, dataBaseDir, imageDir )
 
 fprintf('Building Poselet Histograms\n\n');
 
-%% parameters
-
-canSkip = 0;
-
-%% load texton dictionary (all texton centers)
-
-%inFName = fullfile(dataBaseDir, sprintf('dictionary_%d.mat', dictionarySize));
-%load(inFName,'dictionary');
-
-% loading the poseletes model weeeeeee
+%% loading the poseletes model weeeeeee
 load('data/model.mat'); % loads model
 
-fprintf('Loaded poselets model');
+fprintf('Loaded poselets model\n');
 
-%% compute texton labels of patches and whole-image histograms
+%% compute poselet counts of patches and whole-image histograms
 H_all = zeros(size(imageFileList,1), 1);
 
 for f = 1:size(imageFileList,1)
@@ -50,7 +41,7 @@ for f = 1:size(imageFileList,1)
     
     outFName = fullfile(dataBaseDir, sprintf('%s_poselet_ind.mat', baseFName));
     outFName2 = fullfile(dataBaseDir, sprintf('%s_poselet_hist.mat', baseFName));
-    if(size(dir(outFName),1)~=0 && size(dir(outFName2),1)~=0 && canSkip)
+    if(size(dir(outFName),1)~=0 && size(dir(outFName2),1)~=0)
         fprintf('Skipping %s\n', imageFName);
         load(outFName2, 'H');
         H_all(f, :) = H;
