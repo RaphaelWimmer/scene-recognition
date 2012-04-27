@@ -1,11 +1,10 @@
-
 % add the libraries: strong features & libsvm to the path
 path(path,'libraries/spatial_pyramid')
 %path(path, 'libraries/libsvm-3.12/matlab')
 addpath('libraries/libsvm-3.12/matlab')
 
 
-DEBUG = true;
+DEBUG = false;
 
 if (DEBUG)
 	disp('DEBUG MODE...');
@@ -20,8 +19,6 @@ else
 	test_image_dir = 'data/test_sun'; 
 	data_dir = 'data/data_sun';
 end
-
-disp('using sun files...');
 
 % get training filenames
 train_fnames = dir(fullfile(train_image_dir, '*.jpg'));
@@ -116,6 +113,7 @@ ultimate_decisions = ultimate_decisions';
 
 %# confusion matrix
 C = confusionmat(test_classes, ultimate_decisions)
+save('results/confusion_pyramid_poselets_strong', 'C');
 
 correct = 0;
 for i=1:num_test_files

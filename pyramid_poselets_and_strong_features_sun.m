@@ -1,3 +1,13 @@
+% add the libraries: strong features & poselets & libsvm to the path
+path(path,'libraries/spatial_pyramid')
+addpath('libraries/libsvm-3.12/matlab')
+addpath('libraries/poselets/code')
+addpath('libraries/poselets/code/annotation_tools')
+addpath('libraries/poselets/code/categories')
+addpath('libraries/poselets/code/poselet_detection')
+addpath('libraries/poselets/code/poselet_detection/hog_mex')
+addpath('libraries/poselets/code/visualize')
+
 % set up poselet stuff VERY FIRST
 % note that init CLEARS EVERYTHING IN THE WORKSPACE
 % SO REALLY, DO IT FIRST
@@ -21,9 +31,6 @@ else
 end
 
 % gathering training and testing filenames and category (class) labels.
-disp('using sun files...');
-
-% for other parameters, see BuildPyramid
 train_fnames = dir(fullfile(train_image_dir, '*.jpg'));
 num_train_files = size(train_fnames,1);
 train_filenames = cell(num_train_files,1);
@@ -32,7 +39,6 @@ for f = 1:num_train_files
 	train_filenames{f} = train_fnames(f).name;
 end
 
-% for other parameters, see BuildPyramid
 test_fnames = dir(fullfile(test_image_dir, '*.jpg'));
 num_test_files = size(test_fnames,1);
 test_filenames = cell(num_test_files,1);
@@ -123,7 +129,7 @@ for i=1:num_classes
     end
 
     %# train and test
-    model = svmtrain(K, train_class, '-t 4');
+    model = svmtrain(train_class, K, '-t 4');
     disp('making predictions...');
     [predicted_class, ~, decision_value] = svmpredict(test_class, KK, model);
     decision_values(:,i) = abs(decision_value);
@@ -141,6 +147,7 @@ ultimate_decisions = ultimate_decisions';
 
 % confusion matrix
 C = confusionmat(test_classes, ultimate_decisions)
+save('results/confusion_pyramid_poselets_strong', 'C');
 
 correct = 0;
 for i=1:num_test_files

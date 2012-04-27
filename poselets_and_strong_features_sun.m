@@ -1,16 +1,36 @@
+% add the libraries: strong features & poselets & libsvm to the path
+path(path,'libraries/spatial_pyramid')
+addpath('libraries/libsvm-3.12/matlab')
+addpath('libraries/poselets/code')
+addpath('libraries/poselets/code/annotation_tools')
+addpath('libraries/poselets/code/categories')
+addpath('libraries/poselets/code/poselet_detection')
+addpath('libraries/poselets/code/poselet_detection/hog_mex')
+addpath('libraries/poselets/code/visualize')
+
 % set up poselet stuff VERY FIRST
 % note that init CLEARS EVERYTHING IN THE WORKSPACE
 % SO REALLY, DO IT FIRST
 global config;
 init;
 
-disp('using sun files...');
-NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
-train_image_dir = 'data/sun_train';
-test_image_dir = 'data/sun_test';
-data_dir = 'data/sun_data';
+DEBUG = true;
 
-% for other parameters, see BuildPyramid
+if (DEBUG)
+	disp('DEBUG MODE...');
+	NUM_TRAINING_EXAMPLES_PER_CLASS = 2;
+	train_image_dir = 'data/tiny_train';
+	test_image_dir = 'data/tiny_test';
+	data_dir = 'data/tiny_data';
+else
+	disp('SUN MODE...');
+	NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
+	train_image_dir = 'data/train_sun'; 
+	test_image_dir = 'data/test_sun'; 
+	data_dir = 'data/data_sun';
+end
+
+% get training file names
 train_fnames = dir(fullfile(train_image_dir, '*.jpg'));
 num_train_files = size(train_fnames,1);
 train_filenames = cell(num_train_files,1);
@@ -19,7 +39,7 @@ for f = 1:num_train_files
 	train_filenames{f} = train_fnames(f).name;
 end
 
-% for other parameters, see BuildPyramid
+% get testing filenames
 test_fnames = dir(fullfile(test_image_dir, '*.jpg'));
 num_test_files = size(test_fnames,1);
 test_filenames = cell(num_test_files,1);
@@ -50,18 +70,13 @@ for i=1:class_idx
     test_classes = vertcat(test_classes, truez(:,1));
 end
 
-% return pyramid descriptors for all files in train and test
+disp('strong featuring...');
 % return pyramid descriptors for all files in train and test
 maxImageSize = 1000; % Larger than this will be downsampled.
 dictionarySize = 300; % Increased from her recommended 200 according to the SUN paper.
 numTextonImages = 300; % The number of randomly selected images to build a dictionary from.
 pyramid_train = BuildPyramid(train_filenames,train_image_dir,data_dir,maxImageSize,dictionarySize,numTextonImages);
 pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir,maxImageSize,dictionarySize,numTextonImages);
-
-% compute histogram intersection kernel
-disp('hist_isecting...');
-train_feature_vect = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
-test_feature_vect = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
 
 disp('poseletting...');
 
@@ -75,8 +90,20 @@ load('data/model.mat'); % loads model
 
 train_people = [];
 confidence = 5.7; % this is the confidence level set at the demo for poselets
+
 for f = 1:num_train_files
-    disp(['poselets for train ', f, ' of ', num_train_files]);
+	imageFName = train_filenames{f};
+	[dirN base] = fileparts(imageFName);
+	baseFName = fullfile(dirN, base);
+    outFName2 = fullfile(data_dir, sprintf('%s_poselet_hist.mat', baseFName));
+    if(size(dir(outFName2),1)~=0)
+       	fprintf('Skipping %s\n', imageFName);
+       	load(outFName2, 'H');
+       	train_people(f) = H;
+       	continue;
+    end
+
+    disp(sprintf('poselets for train %d of %d', f, num_train_files));
     clear output poselet_patches fg_masks;
     img = imread([train_image_dir, '/', train_filenames{f}]);
     [bounds_predictions,~,~]=detect_objects_in_image(img,model);
@@ -86,7 +113,18 @@ end
 
 test_people = [];
 for f = 1:num_test_files
-    disp(['poselets for test ', f, ' of ', num_test_files]);
+	imageFName = test_filenames{f};
+	[dirN base] = fileparts(imageFName);
+	baseFName = fullfile(dirN, base);
+    outFName2 = fullfile(data_dir, sprintf('%s_poselet_hist.mat', baseFName));
+    if(size(dir(outFName2),1)~=0)
+       	fprintf('Skipping %s\n', imageFName);
+       	load(outFName2, 'H');
+       	test_people(f) = H;
+       	continue;
+    end
+
+    disp(sprintf('poselets for test %d of %d', f, num_test_files));
     clear output poselet_patches fg_masks;
     img = imread([test_image_dir, '/', test_filenames{f}]);
     [bounds_predictions,~,~]=detect_objects_in_image(img,model);
@@ -95,17 +133,24 @@ for f = 1:num_test_files
 end
 
 % strap the poselet values onto the feature vectors
-train_feature_vect = [train_feature_vect, train_people'];
-test_feature_vect = [test_feature_vect, test_people'];
+train_feature_vect = [pyramid_train, train_people'];
+test_feature_vect = [pyramid_test, test_people'];
 
-decision_values = [];
+% compute histogram intersection kernel
+disp('creating histogram intersection kernel...');
+K = [(1:num_train_files)' , hist_isect(train_feature_vect, train_feature_vect)]; 
+KK = [(1:num_test_files)' , hist_isect(test_feature_vect, train_feature_vect)];
+
+decision_values = zeros(num_test_files, class_idx);
 
 % make one-vs-all classifiers for each scene type
 % and run it to get a confidence vector for each test image
 for i=1:class_idx
-    disp(['builing classifier for class #', class_idx]);
+    disp('builing classifier for class #');
+	disp(i);
+
     % build the vector describing training labels; 0 for not this class, 1
-    % for this class
+
     train_class = zeros(num_train_files);
     train_class = train_class(:,1);
     train_class((i-1)*NUM_TRAINING_EXAMPLES_PER_CLASS+1:i*NUM_TRAINING_EXAMPLES_PER_CLASS) = 1;
@@ -121,16 +166,16 @@ for i=1:class_idx
     end
 
     %# train and test
-    model = svmtrain(train_class, train_feature_vect, '-t 4');
+    model = svmtrain(train_class, K, '-t 4');
     disp('making predictions...');
-    [predicted_class, ~, decision_value] = svmpredict(test_class, test_feature_vect, model);
+    [predicted_class, ~, decision_value] = svmpredict(test_class, KK, model);
     decision_values(:,i) = abs(decision_value);
 end
 
 % boil down the confidence vectors to just the class with highest
 % confidence for each test image
 disp('finding highest confidence values...');
-ultimate_decisions = [];
+ultimate_decisions = zeros(num_test_files, 1);
 for i=1:num_test_files
     [value, idx] = min(decision_values(i,:));
     ultimate_decisions(i) = idx;
@@ -139,6 +184,7 @@ ultimate_decisions = ultimate_decisions';
 
 % confusion matrix
 C = confusionmat(test_classes, ultimate_decisions)
+save('results/confusion_poselets_strong', 'C');
 
 correct = 0;
 for i=1:num_test_files
