@@ -1,7 +1,9 @@
 
 % add the libraries: strong features & libsvm to the path
 path(path,'libraries/spatial_pyramid')
-path(path, 'libraries/libsvm-3.12/matlab')
+%path(path, 'libraries/libsvm-3.12/matlab')
+addpath('libraries/libsvm-3.12/matlab')
+
 
 DEBUG = true;
 
@@ -21,7 +23,7 @@ end
 
 disp('using sun files...');
 
-% for other parameters, see BuildPyramid
+% get training filenames
 train_fnames = dir(fullfile(train_image_dir, '*.jpg'));
 num_train_files = size(train_fnames,1);
 train_filenames = cell(num_train_files,1);
@@ -30,7 +32,7 @@ for f = 1:num_train_files
 	train_filenames{f} = train_fnames(f).name;
 end
 
-% for other parameters, see BuildPyramid
+% get training filenames
 test_fnames = dir(fullfile(test_image_dir, '*.jpg'));
 num_test_files = size(test_fnames,1);
 test_filenames = cell(num_test_files,1);
@@ -96,6 +98,7 @@ for i=1:class_idx
         test_class(1:sum(test_class_counts(1:i))) = 1;
     end
 
+	disp('going to train...');
     %# train and test
     model = svmtrain(train_class, K, '-t 4');
     disp('making predictions...');
