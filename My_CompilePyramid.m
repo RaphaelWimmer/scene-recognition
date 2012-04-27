@@ -57,7 +57,7 @@ for f = 1:size(imageFileList,1)
              imageFName, wid, hgt);
 
     pyramid_cell = cell(pyramidLevels,1);
-    temp = false(zeros(1, length(poselet_ind.x)));
+    peopleMark = zeros(1, length(poselet_ind.x));
 
     %% compute counts
     for l = (pyramidLevels:-1:1)
@@ -73,21 +73,21 @@ for f = 1:size(imageFileList,1)
                 y_hi = floor(binHeightAtThisLevel * j);
                 
                 % mark the poselets we found
-                temp((poselet_ind.x > x_lo) & (poselet_ind.x + poselet_ind.pWid <= x_hi) & ...
-                     (poselet_ind.y > y_lo) & (poselet_ind.y + poselet_ind.pHgt <= y_hi)) = true;
+                peopleMark((poselet_ind.x > x_lo) & (poselet_ind.x + poselet_ind.pWid <= x_hi) & ...
+                     (poselet_ind.y > y_lo) & (poselet_ind.y + poselet_ind.pHgt <= y_hi)) = 1;
                 
                 %poselet_count = length(temp((poselet_ind.x > x_lo) & (poselet_ind.x + poselet_ind.pWid <= x_hi) & ...
                 %                            (poselet_ind.y > y_lo) & (poselet_ind.y + poselet_ind.pHgt <= y_hi)));
-                poselet_count = length(temp);
+                poselet_count = sum(peopleMark);
                 
                 % zero out the poselets that we found
-                poselet_ind.x(logical(temp)) = -1;
-                poselet_ind.y(logical(temp)) = -1;
-                poselet_ind.pHght(logical(temp)) = -1;
-                poselet_ind.pWid(logical(temp)) = -1;
+                poselet_ind.x(peopleMark == 1) = -1;
+                poselet_ind.y(peopleMark == 1) = -1;
+                poselet_ind.pHgt(peopleMark == 1) = -1;
+                poselet_ind.pWid(peopleMark == 1) = -1;
                 
-                % reset temp
-                temp = zeros(length(poselet_ind.x), 1);
+                % reset peopleMark
+                peopleMark = zeros(length(poselet_ind.x), 1);
                 
                 % make histogram of features in bin
                 pyramid_cell{l}(i,j,:) = poselet_count;

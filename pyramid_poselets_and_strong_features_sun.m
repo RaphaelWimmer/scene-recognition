@@ -112,7 +112,7 @@ for i=1:num_classes
     end
 
     %# train and test
-    model = svmtrain(train_class, K, '-t 4');
+    model = svmtrain(K, train_class, '-t 4');
     disp('making predictions...');
     [predicted_class, ~, decision_value] = svmpredict(test_class, KK, model);
     decision_values(:,i) = abs(decision_value);
