@@ -4,7 +4,7 @@ path(path,'libraries/spatial_pyramid')
 addpath('libraries/libsvm-3.12/matlab')
 
 
-DEBUG = false;
+DEBUG = true;
 
 if (DEBUG)
 	disp('DEBUG MODE...');
@@ -52,7 +52,6 @@ for f = 1:num_test_files
         counter = counter + 1;
     end
 end
-
 test_class_counts(class_idx) = counter;
 
 test_classes = [];
@@ -60,6 +59,19 @@ for i=1:class_idx
     truez = ones(test_class_counts(i))*i;
     test_classes = vertcat(test_classes, truez(:,1));
 end
+
+% get a count for how many classifiers we will want to build
+class_idx = 0;
+current_head = 'not a head';
+
+for f = 1:num_train_files
+    if isempty(strfind(train_fnames(f).name, current_head))
+        current_head = strtok(train_fnames(f).name, '-');
+        class_idx = class_idx + 1;
+    end
+end
+
+num_train_classes = class_idx;
 
 % return pyramid descriptors for all files in train and test
 maxImageSize = 1000; % Larger than this will be downsampled.
@@ -76,8 +88,8 @@ KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
 decision_values = [];
 
 % make one-vs-all classifiers for each scene type
-for i=1:class_idx
-    disp(['builing classifier for class #', class_idx]);
+for i=1:num_train_classes
+    disp(sprintf('builing classifier for class #%d', i));
 
     % build the vector describing training labels; 0 for not this class, 1
     % for this class

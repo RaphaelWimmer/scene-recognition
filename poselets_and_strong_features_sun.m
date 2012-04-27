@@ -70,6 +70,19 @@ for i=1:class_idx
     test_classes = vertcat(test_classes, truez(:,1));
 end
 
+% get a count for how many classifiers we will want to build
+class_idx = 0;
+current_head = 'not a head';
+
+for f = 1:num_train_files
+    if isempty(strfind(train_fnames(f).name, current_head))
+        current_head = strtok(train_fnames(f).name, '-');
+        class_idx = class_idx + 1;
+    end
+end
+
+num_train_classes = class_idx;
+
 disp('strong featuring...');
 % return pyramid descriptors for all files in train and test
 maxImageSize = 1000; % Larger than this will be downsampled.
@@ -141,13 +154,12 @@ disp('creating histogram intersection kernel...');
 K = [(1:num_train_files)' , hist_isect(train_feature_vect, train_feature_vect)]; 
 KK = [(1:num_test_files)' , hist_isect(test_feature_vect, train_feature_vect)];
 
-decision_values = zeros(num_test_files, class_idx);
+decision_values = zeros(num_test_files, num_train_classes);
 
 % make one-vs-all classifiers for each scene type
 % and run it to get a confidence vector for each test image
-for i=1:class_idx
-    disp('builing classifier for class #');
-	disp(i);
+for i=1:num_train_classes
+    disp(sprintf('builing classifier for class #', i));
 
     % build the vector describing training labels; 0 for not this class, 1
 
