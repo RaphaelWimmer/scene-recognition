@@ -7,8 +7,9 @@ train_image_dir = 'data/train_sun';
 test_image_dir = 'data/test_sun'; 
 data_dir = 'data/data_sun';
 
-% add the libraries strong features code to the path
+% add the libraries: strong features & libsvm to the path
 path(path,'libraries/spatial_pyramid')
+path(path, 'libraries/libsvm-3.12/matlab')
 
 % for other parameters, see BuildPyramid
 train_fnames = dir(fullfile(train_image_dir, '*.jpg'));

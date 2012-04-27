@@ -109,6 +109,6 @@ for f = 1:size(imageFileList,1)
 end % f
 
 outFName = fullfile(dataBaseDir, sprintf('poselet_pyramids_all_%d.mat', pyramidLevels));
-save(outFName, 'pyramid_all');
+save(outFName, 'pyramid_all', '-v7.3');
 
 end
