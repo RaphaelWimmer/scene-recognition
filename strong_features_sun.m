@@ -1,15 +1,25 @@
-NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
-
-disp('using sun files...');
-
-% set image_dir and data_dir to your actual directories
-train_image_dir = 'data/train_sun'; 
-test_image_dir = 'data/test_sun'; 
-data_dir = 'data/data_sun';
 
 % add the libraries: strong features & libsvm to the path
 path(path,'libraries/spatial_pyramid')
 path(path, 'libraries/libsvm-3.12/matlab')
+
+DEBUG = true;
+
+if (DEBUG)
+	disp('DEBUG MODE...');
+	NUM_TRAINING_EXAMPLES_PER_CLASS = 2;
+	train_image_dir = 'data/tiny_train';
+	test_image_dir = 'data/tiny_test';
+	data_dir = 'data/tiny_data';
+else
+	disp('SUN MODE...');
+	NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
+	train_image_dir = 'data/train_sun'; 
+	test_image_dir = 'data/test_sun'; 
+	data_dir = 'data/data_sun';
+end
+
+disp('using sun files...');
 
 % for other parameters, see BuildPyramid
 train_fnames = dir(fullfile(train_image_dir, '*.jpg'));

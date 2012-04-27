@@ -4,13 +4,24 @@
 global config;
 init;
 
+DEBUG = true;
+
+if (DEBUG)
+	disp('DEBUG MODE...');
+	NUM_TRAINING_EXAMPLES_PER_CLASS = 2;
+	train_image_dir = 'data/tiny_train';
+	test_image_dir = 'data/tiny_test';
+	data_dir = 'data/tiny_data';
+else
+	disp('SUN MODE...');
+	NUM_TRAINING_EXAMPLES_PER_CLASS = 50;
+	train_image_dir = 'data/train_sun'; 
+	test_image_dir = 'data/test_sun'; 
+	data_dir = 'data/data_sun';
+end
+
 % gathering training and testing filenames and category (class) labels.
 disp('using sun files...');
-% FIX ALL THIS SHIT
-NUM_TRAINING_EXAMPLES_PER_CLASS = 2;
-train_image_dir = 'data/tiny_train';
-test_image_dir = 'data/tiny_test';
-data_dir = 'data/tiny_data';
 
 % for other parameters, see BuildPyramid
 train_fnames = dir(fullfile(train_image_dir, '*.jpg'));
