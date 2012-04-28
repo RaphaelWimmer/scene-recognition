@@ -33,9 +33,10 @@ For building texton dictionary - we took 300 centroids rather than 200. We built
 For poselets pyramids we are not penalizing larger people.
 
 \section{Experiments}
-1. strong features
+1. strong features 4 levels of pyramid
 2. strong features + people counts in whole picture -> NOTE! This is currently set to run with "fast detection" settings. May want to re-run it with optimal settings.
 3. strong features + people counts in spatial pyramids -> NOTE! In the original pyramid intersection kernel she penalizes matches that occure in larger cells because they involve increasingly dissimilar features. Is that really the case here? We would think that larger people should be just as ok. So may want to change that.
+3 levels of pyramid for people
 
 \bibliographystyle{plain}
 \bibliography{report}
