@@ -14,7 +14,7 @@ addpath('libraries/poselets/code/visualize')
 global config;
 init;
 
-DEBUG = true;
+DEBUG = false;
 
 if (DEBUG)
 	disp('DEBUG MODE...');
@@ -101,8 +101,11 @@ test_feature_vect = [pyramid_test, pyramid_poselet_test];
 
 % compute histogram intersection kernel
 disp('creating histogram intersection kernel...');
-K = [(1:num_train_files)' , hist_isect(train_feature_vect, train_feature_vect)]; 
+K = [(1:num_train_files)' , hist_isect(train_feature_vect, train_feature_vect)];
+save('results/K_pyramid_poselets_strong', 'K');
+
 KK = [(1:num_test_files)' , hist_isect(test_feature_vect, train_feature_vect)];
+save('results/KK_pyramid_poselets_strong', 'KK');
 
 decision_values = zeros(num_test_files, num_classes);
 
