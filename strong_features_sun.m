@@ -71,13 +71,16 @@ pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir,maxImageSize,
 disp('hist_isecting...');
 % compute histogram intersection kernel
 K = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
+save('results/K_strong', 'K');
+
 KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
+save('results/KK_strong', 'KK');
 
 decision_values = [];
 
 % make one-vs-all classifiers for each scene type
 for i=1:class_idx
-    disp(['builing classifier for class #', class_idx]);
+    disp(['building classifier for class #', class_idx]);
 
     % build the vector describing training labels; 0 for not this class, 1
     % for this class
@@ -113,7 +116,7 @@ ultimate_decisions = ultimate_decisions';
 
 %# confusion matrix
 C = confusionmat(test_classes, ultimate_decisions)
-save('results/confusion_pyramid_poselets_strong', 'C');
+save('results/confusion_strong', 'C');
 
 correct = 0;
 for i=1:num_test_files
