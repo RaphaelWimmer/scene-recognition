@@ -25,7 +25,7 @@ function [ pyramid_all ] = My_CompilePyramid( imageFileList, dataBaseDir, posele
 fprintf('Building Spatial Pyramid of PEOPLEEEEEE\n\n');
 
 %% parameters
-pyramidLevels = 4;
+pyramidLevels = 3;
 
 binsHigh = 2^(pyramidLevels-1);
 
