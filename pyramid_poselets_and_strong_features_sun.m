@@ -61,6 +61,7 @@ for f = 1:num_test_files
         counter = counter + 1;
     end
 end
+num_train_classes = class_idx;
 test_class_counts(num_train_classes) = counter;
 
 test_classes = [];
@@ -79,8 +80,6 @@ for f = 1:num_train_files
         class_idx = class_idx + 1;
     end
 end
-
-num_train_classes = class_idx;
 
 disp('strong featuring...');
 % return pyramid descriptors for all files in train and test
