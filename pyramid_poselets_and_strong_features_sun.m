@@ -61,15 +61,24 @@ for f = 1:num_test_files
         counter = counter + 1;
     end
 end
-
-num_classes = class_idx;
-
-test_class_counts(num_classes) = counter;
+num_train_classes = class_idx;
+test_class_counts(num_train_classes) = counter;
 
 test_classes = [];
-for i=1:num_classes
+for i=1:num_train_classes
     truez = ones(test_class_counts(i))*i;
     test_classes = vertcat(test_classes, truez(:,1));
+end
+
+% get a count for how many classifiers we will want to build
+class_idx = 0;
+current_head = 'not a head';
+
+for f = 1:num_train_files
+    if isempty(strfind(train_fnames(f).name, current_head))
+        current_head = strtok(train_fnames(f).name, '-');
+        class_idx = class_idx + 1;
+    end
 end
 
 disp('strong featuring...');
@@ -107,11 +116,11 @@ save('results/K_pyramid_poselets_strong', 'K');
 KK = [(1:num_test_files)' , hist_isect(test_feature_vect, train_feature_vect)];
 save('results/KK_pyramid_poselets_strong', 'KK');
 
-decision_values = zeros(num_test_files, num_classes);
+decision_values = zeros(num_test_files, num_train_classes);
 
 % make one-vs-all classifiers for each scene type
 % and run it to get a confidence vector for each test image
-for i=1:num_classes
+for i=1:num_train_classes
     disp('building classifier for class #');
     disp(i);
 
