@@ -75,8 +75,8 @@ end
 disp('strong featuring...');
 % return pyramid descriptors for all files in train and test
 maxImageSize = 1000; % Larger than this will be downsampled.
-dictionarySize = 300; % Increased from her recommended 200 according to the SUN paper.
-numTextonImages = 300; % The number of randomly selected images to build a dictionary from.
+dictionarySize = 200; % Increased from her recommended 200 according to the SUN paper.
+numTextonImages = 50; % The number of randomly selected images to build a dictionary from.
 pyramid_train = BuildPyramid(train_filenames,train_image_dir,data_dir,maxImageSize,dictionarySize,numTextonImages);
 pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir,maxImageSize,dictionarySize,numTextonImages);
 

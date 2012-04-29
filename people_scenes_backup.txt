@@ -1,0 +1,75 @@
+99 street
+95 airport terminal
+81 building facade
+72 casino indoor
+59 art studio
+43 bar
+32 shopping mall indoor
+25 bakery shop
+24 subway interior
+22 museum indoor
+16 market outdoor
+16 fastfood restaurant
+14 arrival gate outdoor
+13 alley
+12 bus interior
+10 sandbox
+9 mountain snowy
+8 rope bridge
+8 aquarium
+7 beach
+6 badminton court indoor
+5 ice skating rink indoor
+4 plaza
+4 amusement park
+3 ski slope
+3 playground
+3 ice skating rink outdoor
+3 forest needleleaf
+3 carrousel
+3 bowling alley
+3 batters box
+2 wrestling ring indoor
+2 underwater coral reef
+2 track outdoor
+2 stage indoor
+2 reception
+2 putting green
+2 mosque indoor
+2 martial arts gym
+2 marsh
+2 game room
+2 cathedral indoor
+2 candy store
+2 cafeteria
+2 banquet hall
+1 theater indoor procenium
+1 television studio
+1 swimming pool indoor
+1 squash court
+1 snowfield
+1 slum
+1 skyscraper
+1 shopfront
+1 shoe shop
+1 runway
+1 river
+1 restaurant kitchen
+1 restaurant
+1 recreation room
+1 raft
+1 raceway
+1 office
+1 nursery
+1 nuclear power plant outdoor
+1 hospital room
+1 highway
+1 gymnasium indoor
+1 field cultivated
+1 excavation
+1 dorm room
+1 coast
+1 bazaar outdoor
+1 baseball field
+1 ball pit
+1 amphitheater

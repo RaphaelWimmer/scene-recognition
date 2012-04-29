@@ -9,6 +9,6 @@ for fname in os.listdir(test):
     counts[prefix] += 1
   else:
     counts[prefix] = 1
-  if counts[prefix] > 200:
+  if counts[prefix] > 50:
 	  #print "removing " + fname
 	 os.remove(test+fname)

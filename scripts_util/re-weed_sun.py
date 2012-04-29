@@ -1,6 +1,7 @@
 import os
 
-test = '/usr/local/shiry/cs280_project/scene-recognition/data/test_sun/'
+#test = '/usr/local/shiry/cs280_project/scene-recognition/data/test_sun/'
+test = '/usr/local/shiry/cs280_project/scene-recognition/data/train_sun/'
 
 acceptable_prefixes = []
 f = open('../people_scenes.txt')
