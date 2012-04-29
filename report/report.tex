@@ -20,21 +20,21 @@
 Bla bla bla.
 
 \section{Data preprocessing}
-Given the runtime of spatial pyramids on the sun dataset and because we only have one machine to run on, we only used the scene categories marked as "typical scenes" for all the object categories that have something to do with person/people etc.
+Given the runtime of spatial pyramids on the sun dataset and because we only have one machine to run on, we only used the scene categories marked as "typical scenes" for all the object categories that have something to do with person/people etc. From these, we chose the top 15 in terms of how many images were tagged with people in them by the taggers.
 
 From these, we choose the scene categories that have at least 100 images in them.
 
-Then, we use 50 images for training and up to 200 from the remaining images for testing. We do not change the training and testing images between algorithms.
+Then, we use 50 images for training and up to 50 from the remaining images for testing. We do not change the training and testing images between algorithms.
 
 Ideally we would have run this on all scenes (maybe if we had a cluster).
 
-For building texton dictionary - we took 300 centroids rather than 200. We built the dictionary based on 300 randomly selected images from the training set rather than her original 50.
+For building texton dictionary - we took 200 centroids as was recommended in the papaer. We built the dictionary based on 50 randomly selected images from the training set again following her recommendation.
 
 For poselets pyramids we are not penalizing larger people.
 
 \section{Experiments}
 1. strong features 4 levels of pyramid
-2. strong features + people counts in whole picture -> NOTE! This is currently set to run with "fast detection" settings. May want to re-run it with optimal settings.
+2. strong features + people counts in whole picture
 3. strong features + people counts in spatial pyramids -> NOTE! In the original pyramid intersection kernel she penalizes matches that occure in larger cells because they involve increasingly dissimilar features. Is that really the case here? We would think that larger people should be just as ok. So may want to change that.
 3 levels of pyramid for people
 

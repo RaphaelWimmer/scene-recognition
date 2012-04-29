@@ -4,7 +4,7 @@ path(path,'libraries/spatial_pyramid')
 addpath('libraries/libsvm-3.12/matlab')
 
 
-DEBUG = true;
+DEBUG = false;
 
 if (DEBUG)
 	disp('DEBUG MODE...');
