@@ -151,10 +151,10 @@ test_feature_vect = [pyramid_test, test_people'];
 
 % compute histogram intersection kernel
 disp('creating histogram intersection kernel...');
-K = [(1:num_train_files)' , hist_isect(train_feature_vect, train_feature_vect)]; 
+K = [(1:num_train_files)' , hist_isect_c(train_feature_vect, train_feature_vect)]; 
 save('results/K_poselets_strong', 'K');
 
-KK = [(1:num_test_files)' , hist_isect(test_feature_vect, train_feature_vect)];
+KK = [(1:num_test_files)' , hist_isect_c(test_feature_vect, train_feature_vect)];
 save('results/KK_poselets_strong', 'KK');
 
 decision_values = zeros(num_test_files, num_train_classes);

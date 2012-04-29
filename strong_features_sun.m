@@ -84,10 +84,10 @@ pyramid_test = BuildPyramid(test_filenames,test_image_dir,data_dir,maxImageSize,
 
 disp('hist_isecting...');
 % compute histogram intersection kernel
-K = [(1:num_train_files)' , hist_isect(pyramid_train, pyramid_train)]; 
+K = [(1:num_train_files)' , hist_isect_c(pyramid_train, pyramid_train)]; 
 save('results/K_strong', 'K');
 
-KK = [(1:num_test_files)' , hist_isect(pyramid_test, pyramid_train)];
+KK = [(1:num_test_files)' , hist_isect_c(pyramid_test, pyramid_train)];
 save('results/KK_strong', 'KK');
 
 decision_values = [];
