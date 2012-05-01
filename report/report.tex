@@ -9,34 +9,67 @@
 
 \begin{document}
 
-\title{Project XXX}
+\title{Towards Semantic Scene Recognition: Calculating and Utilizing the Distribution of People in Scenes}
 \author{Shiry Ginosar \and Valkyrie Savage}
 
 \maketitle
 
-\abstract{Bla bla bla}
+\abstract{Humans perform many visual and knowledge-based inference tasks when recognizing locations in images.  While typically scene recognition work has focused on leveraging the structure of lines and edges for scene recognition tasks, we hope to bring some human-esque semantic recognition abilities into the mix.  In particular, we wished to investigate if distribution of people throughout a scene can be used as a feature for scene recognition.  Intuitively, for instance, more people will be present at more different scales in a scene of a rodeo stadium than in a scene of a family dinner table.  We performed an evaluation of our features on a subset of the SUN Database.  Finally, we discuss future work and experiments we would like to conduct on semantic scene recognition.}
 
 \section{Introduction}
-Bla bla bla.
+One of the three core problems of computer, recognition has made long strides in the past years.  Accuracy of scene recognition algorithms has jumped, and HOG has practically become a household word.  But there is only so far that literal lines in an image can take recognition algorithms: these approaches can be brittle to camera angle and scale changes.
+
+One school of thought believes we should endeavor to make computer vision systems as similar to their human counterparts as possible; this means we need to consider what makes up a scene rather than how it is shaped.  This puts the onus of recognition on object detectors, which have also made noteworthy progress.
+
+\section{Related Work}
+
+The problem of scene recognition has been widely considered important by the computer vision community for many years.  The particular approach taken has varied over the years, but the general formula is to find the HOG of the image, split and combine it in ways that represent scales, location, and information importance, and use a histogram intersection kernel to build a one-vs-all SVM per scene category.  This is the approach taken by Lazebnik\ref{>>>>>??????<<<<<<<} ; she intends to localize features by organizing them into spatial pyramids.  That is, she takes an image, splits it in half in both dimensions, and repeats several times.  On each of these small parts, she does texton detection using a dictionary pre-constructed from 50 random images from her dataset.  She concatenates the texton histograms into one larger histogram.  She then retraces her steps: she performs texton detection on the larger-scale images and concatenates their histograms onto the formed histogram after penalizing them exponentially according to their scale.  This led to rather successful scene recognition on her fifteen category dataset.
+
+The other work that contributes directly to this endeavor is work on finding people in scenes.  The particular piece we consider is Bourdev's poselet work \ref{>>>>>??????<<<<<<<}.  For poselets, ...
+
+\section{Algorithms}
+
+We elected to build off of these two previously-published algorithms in creating our scene recognition feature set.  Bourdev and Lazebnik both made their code available for download on their websites, and we were able to run it with slight modifications relating to dataset location, aggregation, and caching settings.  We also composed these two algorithms into our pyramids of people algorithm.
+
+The pyramids of people algorithm tracks the spatial locations and total counts of people.  We first run Bourdev's poselets algorithm over the entire image to get x,y locations, size, and confidence level information for detected people in the image.  For thresholding, we elected to use the 5.7 confidence measure Bourdev chose for his poselet demonstration code.  We then co-opted the code for spatial pyramid formation from Lazebnik's code with a few modifications.
+
+We do not penalize people found at larger pyramid scales as Lazebnik penalized textons found at larger scales.  People found at larger scales are simply closer to the camera, and the scale information is valuable (imagine a scene of ten people regularly receding away from the camera in stadium seats at a ball game vs. a scene of ten people randomly milling about in a fast food restaurant).
+
+We also take into account the size of the people when determining which pyramid they belong in: Lazebnik considers textons to have an x,y position and no area in an image, while people have varying heights and widths that need to be accounted for.
+
+We also use fewer pyramid levels than Lazebnik does: one limitation of the poselets code in our experience is that it does not detect people smaller than a size of >>>>>??????<<<<<<<, so it does not make sense to quarter the image more than three times.
 
 \section{Data preprocessing}
-Given the runtime of spatial pyramids on the sun dataset and because we only have one machine to run on, we only used the scene categories marked as "typical scenes" for all the object categories that have something to do with person/people etc. From these, we chose the top 15 in terms of how many images were tagged with people in them by the taggers.
 
-From these, we choose the scene categories that have at least 100 images in them.
+Due to the fact that we had only one machine to run our analysis on, we needed to cull the dataset somewhat.  The full SUN dataset is 131,072 images from 908 scene categories.  We had resources to train and test on approximately 50 images from 15 different scene categories owing to the long runtimes of both Lazebnik's spatial pyramid feature building and Bourdev's poselet detectors.  Since our algorithm relies on the presence of people, we wanted to choose scene categories with people present in them.
 
-Then, we use 50 images for training and up to 50 from the remaining images for testing. We do not change the training and testing images between algorithms.
+On the website for the SUN database, CSAIL provides an interface for web users to tag objects in images.  One of the most prominently tagged object categories is ``person'' and derivatives like ``person standing'', ``person sitting'', and ``people''.  SUN offers ``typical scenes'' for each object category, which are the ten scene categories with the largest numbers of tags of that particular object category.  We aggregated the counts for all manually-identified ``person'' derivatives and ranked by largest number of tags.  We then eliminated scene categories with fewer than 100 images so that we would have at least 50 training images and 50 testing images available for each scene category.  From the remaining categories, we selected the 15 with the highest counts of tags as our ``typical scenes.''
 
-Ideally we would have run this on all scenes (maybe if we had a cluster).
+We randomly split the images into 50 training and 50 testing images per scene category.  These divisions were kept constant across all experiments.
 
-For building texton dictionary - we took 200 centroids as was recommended in the papaer. We built the dictionary based on 50 randomly selected images from the training set again following her recommendation.
+%Given the runtime of spatial pyramids on the sun dataset and because we only have one machine to run on, we only used the scene categories marked as "typical scenes" for all the object categories that have something to do with person/people etc. From these, we chose the top 15 in terms of how many images were tagged with people in them by the taggers.
 
-For poselets pyramids we are not penalizing larger people.
+%From these, we choose the scene categories that have at least 100 images in them.
+
+%Then, we use 50 images for training and up to 50 from the remaining images for testing. We do not change the training and testing images between algorithms.
+
+%Ideally we would have run this on all scenes (maybe if we had a cluster).
+
+%For building texton dictionary - we took 200 centroids as was recommended in the papaer. We built the dictionary based on 50 randomly selected images from the training set again following her recommendation.
 
 \section{Experiments}
-1. strong features 4 levels of pyramid
-2. strong features + people counts in whole picture
-3. strong features + people counts in spatial pyramids -> NOTE! In the original pyramid intersection kernel she penalizes matches that occure in larger cells because they involve increasingly dissimilar features. Is that really the case here? We would think that larger people should be just as ok. So may want to change that.
-3 levels of pyramid for people
+We performed experiments on our clipped dataset with three different feature sets.  In all cases we used the above-mentioned 50 training images and 50 test images and a histogram intersection kernel for the SVM.
+
+The first feature set that we tried was unadorned strong features (spatial pyramids) from Lazebnik.
+
+The second feature set was strong features plus a count of people for each entire image, i.e. only their presence, not any spatial information.
+
+The third feature set was strong features plus the pyramids of people features.
+
+To satisfy our curiosity, we also performed an ablation study in which we used only the pyramids of people features.
+
+\section{Future Work}
+We would like to continue investigating the potential of distribution of people as a feature for scene recognition.  We plan to test on a larger cluster in the next week with the full SUN dataset.
 
 \bibliographystyle{plain}
 \bibliography{report}
