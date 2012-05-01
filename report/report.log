@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  30 APR 2012 16:52
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  1 MAY 2012 10:16
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -360,11 +360,11 @@ e
 ))
 
 LaTeX Warning: Reference `>>>>>??????<<<<<<<' on page 1 undefined on input line
- 24.
+ 26.
 
 
 LaTeX Warning: Reference `>>>>>??????<<<<<<<' on page 1 undefined on input line
- 26.
+ 28.
 
 [1
 
@@ -389,7 +389,7 @@ Here is how much of TeX's memory you used:
 </usr/local/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
 usr/local/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
 r/local/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on report.pdf (3 pages, 76457 bytes).
+Output written on report.pdf (3 pages, 76290 bytes).
 PDF statistics:
  34 PDF objects out of 1000 (max. 8388607)
  23 compressed objects within 1 object stream

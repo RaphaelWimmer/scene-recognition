@@ -9,7 +9,7 @@
 
 \begin{document}
 
-\title{Towards Semantic Scene Recognition: Calculating and Utilizing the Distribution of People in Scenes}
+\title{Towards Semantic Scene Recognition: Pyramids of People}
 \author{Shiry Ginosar \and Valkyrie Savage}
 
 \maketitle
@@ -25,7 +25,7 @@ One school of thought believes we should endeavor to make computer vision system
 
 The problem of scene recognition has been widely considered important by the computer vision community for many years.  The particular approach taken has varied over the years, but the general formula is to find the HOG of the image, split and combine it in ways that represent scales, location, and information importance, and use a histogram intersection kernel to build a one-vs-all SVM per scene category.  This is the approach taken by Lazebnik\ref{>>>>>??????<<<<<<<} ; she intends to localize features by organizing them into spatial pyramids.  That is, she takes an image, splits it in half in both dimensions, and repeats several times.  On each of these small parts, she does texton detection using a dictionary pre-constructed from 50 random images from her dataset.  She concatenates the texton histograms into one larger histogram.  She then retraces her steps: she performs texton detection on the larger-scale images and concatenates their histograms onto the formed histogram after penalizing them exponentially according to their scale.  This led to rather successful scene recognition on her fifteen category dataset.
 
-The other work that contributes directly to this endeavor is work on finding people in scenes.  The particular piece we consider is Bourdev's poselet work \ref{>>>>>??????<<<<<<<}.  For poselets, ...
+The other work that contributes directly to this endeavor is work on finding people in scenes.  The particular piece we consider is Bourdev's poselet work \ref{>>>>>??????<<<<<<<}.  Bourdev asserts that we are handicapping computers by allowing them only one image rather than a lifetime of experience in learning.  In order to approximate some part of this learning, he uses annotated images of people with ``key points'' marked: head, left shoulder, right shoulder, left hip, right hip, etc.  From these key point annotations, he groups similar annotation pieces (e.g. all people who are crossing their arms) and builds a classifier for each ``poselet'' described by these groups.  These classifiers work together to estimate key point locations and bounding boxes of people in an image.  Poselets have been extended for use in determining people's activities, clothing, and gender.
 
 \section{Algorithms}
 
@@ -69,7 +69,7 @@ The third feature set was strong features plus the pyramids of people features.
 To satisfy our curiosity, we also performed an ablation study in which we used only the pyramids of people features.
 
 \section{Future Work}
-We would like to continue investigating the potential of distribution of people as a feature for scene recognition.  We plan to test on a larger cluster in the next week with the full SUN dataset.
+We would like to continue investigating the potential of distribution of people as a feature for scene recognition.  We plan to test on a larger cluster in the next week with the full SUN dataset.  We would also like to examine the power of the poselet attribute work (determining gender, activity, and clothing) on our work.  Intuitively, a scene in which many people seem to be riding horses is more likely to be a rodeo than a scene in which many people seem to be lying down.
 
 \bibliographystyle{plain}
 \bibliography{report}
