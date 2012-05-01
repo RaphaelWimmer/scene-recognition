@@ -37,13 +37,13 @@ We do not penalize people found at larger pyramid scales as Lazebnik penalized t
 
 We also take into account the size of the people when determining which pyramid they belong in: Lazebnik considers textons to have an x,y position and no area in an image, while people have varying heights and widths that need to be accounted for.
 
-We also use fewer pyramid levels than Lazebnik does: one limitation of the poselets code in our experience is that it does not detect people smaller than a size of >>>>>??????<<<<<<<, so it does not make sense to quarter the image more than three times.
+We also use fewer pyramid levels than Lazebnik does: one limitation of the poselets code in our experience is that it does not detect people smaller than a size of >>>>><<<<<<<??????, so it does not make sense to quarter the image more than three times.
 
 \section{Data preprocessing}
 
 Due to the fact that we had only one machine to run our analysis on, we needed to cull the dataset somewhat.  The full SUN dataset is 131,072 images from 908 scene categories.  We had resources to train and test on approximately 50 images from 15 different scene categories owing to the long runtimes of both Lazebnik's spatial pyramid feature building and Bourdev's poselet detectors.  Since our algorithm relies on the presence of people, we wanted to choose scene categories with people present in them.
 
-On the website for the SUN database, CSAIL provides an interface for web users to tag objects in images.  One of the most prominently tagged object categories is ``person'' and derivatives like ``person standing'', ``person sitting'', and ``people''.  SUN offers ``typical scenes'' for each object category, which are the ten scene categories with the largest numbers of tags of that particular object category.  We aggregated the counts for all manually-identified ``person'' derivatives and ranked by largest number of tags.  We then eliminated scene categories with fewer than 100 images so that we would have at least 50 training images and 50 testing images available for each scene category.  From the remaining categories, we selected the 15 with the highest counts of tags as our ``typical scenes.''
+On the website for the SUN database, CSAIL provides an interface for web users to tag objects in images.  One of the most prominently tagged object categories is ``person'' and derivatives like ``person standing'', ``person sitting'', and ``people''.  SUN offers ``typical scenes'' for each object category, which are the ten scene categories with the largest numbers of tags of that particular object category.  We aggregated the counts for all manually-identified ``person'' derivatives and ranked by largest number of tags.  We then eliminated scene categories with fewer than 100 images so that we would have at least 50 training images and 50 testing images available for each scene category.  From the remaining categories, we selected the 15 with the highest tag counts as our ``typical scenes.''
 
 We randomly split the images into 50 training and 50 testing images per scene category.  These divisions were kept constant across all experiments.
 
@@ -58,7 +58,7 @@ We randomly split the images into 50 training and 50 testing images per scene ca
 %For building texton dictionary - we took 200 centroids as was recommended in the papaer. We built the dictionary based on 50 randomly selected images from the training set again following her recommendation.
 
 \section{Experiments}
-We performed experiments on our clipped dataset with three different feature sets.  In all cases we used the above-mentioned 50 training images and 50 test images and a histogram intersection kernel for the SVM.
+We performed experiments on our clipped dataset with three different feature sets.  In all cases we used the above-mentioned 50 training images and 50 test images and a histogram intersection kernel for the SVM.  Our experiments were performed on a quad core server, and the runtime was approximately 4 days.
 
 The first feature set that we tried was unadorned strong features (spatial pyramids) from Lazebnik.
 

@@ -1,4 +1,7 @@
 *.pdf
+*.log
+*.aux
+*.synctex.gz
 *DS_Store*
 data/*
 libraries/*
