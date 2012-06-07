@@ -1,2 +1,2 @@
 #!/bin/sh
-python /work4/shiry/scene-recognition/scripts_util/split_train_and_test.py
+echo 'addpath("/work4/shiry/scene-recognition/"); poselets_and_strong_features_sun'  | /usr/sww/pkg/matlab-r2010b/bin/matlab >> /work4/shiry/scene-recognition/results/poselets_strong_feat_hkm_chi2_1.txt 2>&1 &

@@ -7,7 +7,6 @@ addpath('libraries/poselets/code/categories')
 addpath('libraries/poselets/code/poselet_detection')
 addpath('libraries/poselets/code/poselet_detection/hog_mex')
 addpath('libraries/poselets/code/visualize')
-addpath('libraries/vlfeat-0.9.14/toolbox/misc')
 
 % set up poselet stuff VERY FIRST
 % note that init CLEARS EVERYTHING IN THE WORKSPACE
@@ -151,12 +150,12 @@ train_feature_vect = [pyramid_train, train_people'];
 test_feature_vect = [pyramid_test, test_people'];
 
 % compute histogram intersection kernel
-disp('creating homogeneous kernel map...');
-K = [(1:num_train_files)' , vl_homkermap(train_feature_vect, 1)]; 
-save('results/K_poselets_strong_homkermap', 'K');
+disp('creating histogram intersection kernel...');
+K = [(1:num_train_files)' , hist_isect_c(train_feature_vect, train_feature_vect)]; 
+save('results/K_poselets_strong', 'K');
 
-KK = [(1:num_test_files)' , vl_homkermap(test_feature_vect, 1)];
-save('results/KK_poselets_strong_homkermap', 'KK');
+KK = [(1:num_test_files)' , hist_isect_c(test_feature_vect, train_feature_vect)];
+save('results/KK_poselets_strong', 'KK');
 
 decision_values = zeros(num_test_files, num_train_classes);
 
@@ -182,9 +181,9 @@ for i=1:num_train_classes
     end
 
     %# train and test
-    model = train(train_class, K);
+    model = svmtrain(train_class, K, '-t 4');
     disp('making predictions...');
-    [predicted_class, ~, decision_value] = predict(test_class, KK, model);
+    [predicted_class, ~, decision_value] = svmpredict(test_class, KK, model);
     decision_values(:,i) = abs(decision_value);
 end
 
