@@ -1,6 +1,9 @@
+% create parameter .mat files so that we can pass them to the map and reduce
+% functions.
+
 DEBUG = false;
 
-prefix = '/work4/shiry/scene-recognition/';
+prefix = '/work/shiry/scene-recognition/';
 
 if (DEBUG)
 	disp('DEBUG MODE...');

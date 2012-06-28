@@ -19,7 +19,7 @@ end
 %    map_output -> Return the results. You can return a struct of multiple elements.
 %              If you return [] for all calls to do_job, collect_jobs will not be called 
 function map_output = do_job(first_el, last_el, param_file)
-	prefix = '/work4/shiry/scene-recognition/'
+	prefix = '/work/shiry/scene-recognition/'
 	
 	addpath([prefix 'libraries/libsvm-3.12/matlab'])
 	addpath([prefix 'libraries/poselets/code'])
@@ -74,10 +74,10 @@ end
 %    reduce_output -> Return the results of combination. You can return a struct of multiple elements
 function reduce_output = collect_jobs(job_outputs,ranges,param_file)
 	% collect the kernel from all the mappers
-	K = [];
+	K = zeros(numel(job_outputs));
 	for k=1:numel(job_outputs)
 		temp=job_outputs{k}.output;	
-		K = [K; temp];
+		K(job_outputs{k}.elements_range) = temp;
 	end
 
 	classifiers = [];
@@ -94,8 +94,7 @@ function reduce_output = collect_jobs(job_outputs,ranges,param_file)
 		model = train(train_class, K);
 		classifiers = [classifiers; model];
 	end
-
+	% we are assuming that this gets written out to results/intermediate_tmp. If it is not there - panic.
 	reduce_output = classifiers;
 end
-
-% THIS WILL NOT WORK. before we trained to get a model per class and then immediately predicted using that model. Now, if we fan out for prediction we have to figure out a way to know which class an svm classifier refers to. Right now we are sticking all the classifiers togther in the reduce output.
+% We think this file is done.
