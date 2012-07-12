@@ -1,6 +1,6 @@
 import os
 
-SUN_DIR = '/work4/shiry/scene-recognition/data/sun/'
+SUN_DIR = '/work/shiry/scene-recognition/data/sun/'
 TRAIN_DIR = os.path.join(SUN_DIR, 'train')
 TEST_DIR = os.path.join(SUN_DIR, 'test')
 TRAIN_IMAGES = 60

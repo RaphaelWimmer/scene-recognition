@@ -1,6 +1,6 @@
 import os
 
-sun = '/work4/shiry/scene-recognition/data/sun/'
+sun = '/work/shiry/scene-recognition/data/sun/'
 
 acceptable_prefixes = []
 f = open('../people_scenes.txt')

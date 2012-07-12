@@ -1,8 +1,8 @@
 import os
 
-new_dest = "/work4/shiry/scene-recognition/data/sun/"
+new_dest = "/work/shiry/scene-recognition/data/sun/"
 
-for (root, dirs, files) in os.walk("/work4/shiry/scene-recognition/data/sun/SUN397/"):
+for (root, dirs, files) in os.walk("/work/shiry/scene-recognition/data/sun/SUN397/"):
   for file in files:
     # we need to prepend the scene name, including the indoor, outdoor parts
     scene = ""
