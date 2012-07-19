@@ -7,14 +7,14 @@ function exec_config=default_config
     % Directory where we create shell scripts and get error messages for
     % each operation. It doesn't grow large and you can safely delete it
     % when the jobs are done
-    exec_config.batch_dir = ['/work/' exec_config.usr_name '/scene-recognition/results/batch_tmp'];
+    exec_config.batch_dir = ['/work/' exec_config.usr_name '/scene-recognition/results/logs_tmp'];
 
     % Directory where we keep intermediate results of the jobs. It may get
     % large depending on your jobs. The jobs check for files there and if
     % the files are present (from previous runs) they get reused, which
     % could be faster. But if you want to redo the jobs again you need to
     % delete this directory
-    exec_config.work_dir = ['/work/' exec_config.usr_name '/scene-recognition/results/intermediate_tmp'];
+    exec_config.work_dir = ['/work/' exec_config.usr_name '/scene-recognition/results/output_tmp'];
 
     exec_config.sleep_time = 10; % how long to check if jobs need update
     

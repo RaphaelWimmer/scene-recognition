@@ -31,7 +31,7 @@ else
     fprintf(fid, sprintf('#PBS -l mem=%dg \n\n',mem));
 end
 fprintf(fid, sprintf('#PBS -l walltime=%d:00:00 \n\n',hours));
-fprintf(fid, sprintf('/usr/sww/pkg/matlab-r2008a/bin/matlab -nojvm -nodisplay -r "%s;quit;" > %s 2> %s\n', matlab_command, fullfile(batchDir,sprintf('%s.log',jobName)), fullfile(batchDir,sprintf('%s.err',jobName))));	
+fprintf(fid, sprintf('/usr/sww/pkg/matlab-r2010b/bin/matlab -nojvm -nodisplay -r "%s;quit;" > %s 2> %s\n', matlab_command, fullfile(batchDir,sprintf('%s.log',jobName)), fullfile(batchDir,sprintf('%s.err',jobName))));	
 %fprintf(fid, sprintf('/usr/sww/pkg/matlab-r2008a/bin/matlab -nojvm -nodisplay -r "%s;quit;"\n',matlab_command));
 fclose(fid);
 if(~exist(fname, 'file'))

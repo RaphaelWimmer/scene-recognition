@@ -21,7 +21,7 @@ end
 function map_output = do_job(first_el, last_el, param_file)
 	prefix = '/work/shiry/scene-recognition/'
 	
-	addpath([prefix 'libraries/libsvm-3.12/matlab'])
+	addpath([prefix 'libraries/liblinear-1.91/matlab'])
 	addpath([prefix 'libraries/poselets/code'])
 	addpath([prefix 'libraries/poselets/code/annotation_tools'])
 	addpath([prefix 'libraries/poselets/code/categories'])
@@ -52,6 +52,7 @@ function map_output = do_job(first_el, last_el, param_file)
 			load(outFName2, 'H');
 			people(f) = H;
 			continue;
+		end
 	end
 
 	clear output poselet_patches fg_masks;
